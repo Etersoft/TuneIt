@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=tuneit
+Exec=tuneit
+Icon=ru.ximperlinux.TuteIt
+Terminal=false
+Type=Application
+Categories=Utility;
+Keywords=GTK;
+StartupNotify=true
+DBusActivatable=true

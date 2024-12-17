@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Created with Cambalache 0.94.1 -->
+<interface>
+  <!-- interface-name window.ui -->
+  <requires lib="Adw" version="1.0"/>
+  <requires lib="gio" version="2.0"/>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="libadwaita" version="1.6"/>
+  <template class="TuneitWindow" parent="AdwApplicationWindow">
+    <property name="content">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar">
+            <child type="end">
+              <object class="GtkMenuButton">
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="menu-model">primary_menu</property>
+                <property name="primary">True</property>
+                <property name="tooltip-text" translatable="yes">Main Menu</property>
+              </object>
+            </child>
+            <child type="title">
+              <object class="AdwViewSwitcher">
+                <property name="policy">wide</property>
+                <property name="stack">main_stack</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwViewStack" id="main_stack">
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="child">
+                  <object class="GtkBox">
+                    <child>
+                      <object class="AdwNavigationSplitView">
+                        <property name="content">
+                          <object class="AdwNavigationPage">
+                            <property name="title">content page</property>
+                            <child>
+                              <object class="GtkStack" id="main_pagestack"/>
+                            </child>
+                          </object>
+                        </property>
+                        <property name="hexpand">True</property>
+                        <property name="sidebar">
+                          <object class="AdwNavigationPage">
+                            <property name="title">sidebar page</property>
+                            <child>
+                              <object class="AdwClampScrollable">
+                                <property name="margin-bottom">8</property>
+                                <property name="margin-end">8</property>
+                                <property name="margin-start">8</property>
+                                <property name="margin-top">8</property>
+                                <child>
+                                  <object class="GtkStackSidebar">
+                                    <property name="stack">main_pagestack</property>
+                                  </object>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+                <property name="icon-name">preferences-system</property>
+                <property name="name">main</property>
+                <property name="title">main</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+    <property name="default-height">600</property>
+    <property name="default-width">800</property>
+    <property name="title" translatable="yes">TuneIt</property>
+  </template>
+  <menu id="primary_menu">
+    <section>
+      <item>
+        <attribute name="action">app.preferences</attribute>
+        <attribute name="label" translatable="yes">_Preferences</attribute>
+      </item>
+      <item>
+        <attribute name="action">win.show-help-overlay</attribute>
+        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+      </item>
+      <item>
+        <attribute name="action">app.about</attribute>
+        <attribute name="label" translatable="yes">_About TuneIt</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>

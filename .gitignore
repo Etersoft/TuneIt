@@ -1,0 +1,14 @@
+.idea
+
+# vscode
+.vscode
+
+# .po
+*.mo
+*.pot
+
+# flatpak
+.flatpak
+
+# meson
+_build

@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<!DOCTYPE cambalache-project SYSTEM "cambalache-project.dtd">
+<cambalache-project version="0.94.0" target_tk="gtk-4.0">
+  <ui>
+	(1,1,"window.ui","window..ui",None,None,None,None,None,None,None)
+  </ui>
+  <ui_library>
+	(1,"Adw","1.0",None),
+	(1,"gio","2.0",None),
+	(1,"gtk","4.0",None),
+	(1,"libadwaita","1.6",None)
+  </ui_library>
+  <object>
+	(1,1,"AdwApplicationWindow","TuneitWindow",None,None,None,None,0,None,None),
+	(1,2,"AdwToolbarView",None,1,None,None,None,0,None,None),
+	(1,3,"AdwHeaderBar",None,2,None,"top",None,0,None,None),
+	(1,4,"GtkMenuButton",None,3,None,"end",None,0,None,None),
+	(1,5,"AdwViewSwitcher",None,3,None,"title",None,1,None,None),
+	(1,6,"AdwViewStack","main_stack",2,None,None,None,1,None,None),
+	(1,7,"AdwViewStackPage",None,6,None,None,None,0,None,None),
+	(1,8,"GtkBox",None,7,None,None,None,0,None,None),
+	(1,9,"AdwNavigationSplitView",None,8,None,None,None,0,None,None),
+	(1,10,"AdwNavigationPage",None,9,None,None,None,0,None,None),
+	(1,11,"GtkStack","main_pagestack",10,None,None,None,0,None,None),
+	(1,12,"AdwNavigationPage",None,9,None,None,None,1,None,None),
+	(1,13,"AdwClampScrollable",None,12,None,None,None,0,None,None),
+	(1,14,"GtkStackSidebar",None,13,None,None,None,0,None,None),
+	(1,15,"(menu)","primary_menu",None,None,None,None,1,None,None),
+	(1,16,"(section)",None,15,None,None,None,0,None,None),
+	(1,17,"(item)",None,16,None,None,None,0,None,None),
+	(1,18,"(item)",None,16,None,None,None,1,None,None),
+	(1,19,"(item)",None,16,None,None,None,2,None,None)
+  </object>
+  <object_property>
+	(1,1,"AdwApplicationWindow","content",None,0,None,None,None,2,None,None,None,None),
+	(1,1,"GtkWindow","default-height","600",0,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","default-width","800",0,None,None,None,None,None,None,None,None),
+	(1,1,"GtkWindow","title","TuneIt",1,None,None,None,None,None,None,None,None),
+	(1,4,"GtkMenuButton","icon-name","open-menu-symbolic",0,None,None,None,None,None,None,None,None),
+	(1,4,"GtkMenuButton","menu-model","15",0,None,None,None,None,None,None,None,None),
+	(1,4,"GtkMenuButton","primary","True",0,None,None,None,None,None,None,None,None),
+	(1,4,"GtkWidget","tooltip-text","Main Menu",1,None,None,None,None,None,None,None,None),
+	(1,5,"AdwViewSwitcher","policy","wide",0,None,None,None,None,None,None,None,None),
+	(1,5,"AdwViewSwitcher","stack","6",0,None,None,None,None,None,None,None,None),
+	(1,7,"AdwViewStackPage","child",None,0,None,None,None,8,None,None,None,None),
+	(1,7,"AdwViewStackPage","icon-name","preferences-system",0,None,None,None,None,None,None,None,None),
+	(1,7,"AdwViewStackPage","name","main",0,None,None,None,None,None,None,None,None),
+	(1,7,"AdwViewStackPage","title","main",0,None,None,None,None,None,None,None,None),
+	(1,9,"AdwNavigationSplitView","content",None,0,None,None,None,10,None,None,None,None),
+	(1,9,"AdwNavigationSplitView","sidebar",None,0,None,None,None,12,None,None,None,None),
+	(1,9,"GtkWidget","hexpand","True",0,None,None,None,None,None,None,None,None),
+	(1,10,"AdwNavigationPage","title","content page",None,None,None,None,None,None,None,None,None),
+	(1,12,"AdwNavigationPage","title","sidebar page",None,None,None,None,None,None,None,None,None),
+	(1,13,"GtkWidget","margin-bottom","8",0,None,None,None,None,None,None,None,None),
+	(1,13,"GtkWidget","margin-end","8",0,None,None,None,None,None,None,None,None),
+	(1,13,"GtkWidget","margin-start","8",0,None,None,None,None,None,None,None,None),
+	(1,13,"GtkWidget","margin-top","8",0,None,None,None,None,None,None,None,None),
+	(1,14,"GtkStackSidebar","stack","11",0,None,None,None,None,None,None,None,None),
+	(1,17,"(item)","action","app.preferences",0,None,None,None,None,None,None,None,None),
+	(1,17,"(item)","label","_Preferences",1,None,None,None,None,None,None,None,None),
+	(1,18,"(item)","action","win.show-help-overlay",0,None,None,None,None,None,None,None,None),
+	(1,18,"(item)","label","_Keyboard Shortcuts",1,None,None,None,None,None,None,None,None),
+	(1,19,"(item)","action","app.about",0,None,None,None,None,None,None,None,None),
+	(1,19,"(item)","label","_About TuneIt",1,None,None,None,None,None,None,None,None)
+  </object_property>
+</cambalache-project>
