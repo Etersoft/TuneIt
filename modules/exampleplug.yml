@@ -11,11 +11,11 @@
           backend: gsettings
           key: org.gnome.desktop.interface.icon-theme
         - name: Style
-          type: boolean
-          gtype: boolean
+          type: choice
+          gtype: string
           help: Prefer dark or light for Adwaita applications
           backend: gsettings
-          key: org.gnome.desktop.interface.cursor-blink
+          key: org.gnome.desktop.interface.color-scheme
           default: "default"
           map:
             Default: default
