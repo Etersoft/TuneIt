@@ -21,6 +21,63 @@ import yaml
 import os
 from gi.repository import Adw, Gtk, Gio, GLib
 
+class BaseWidget:
+    def __init__(self, setting):
+        self.setting = setting
+
+    def create_row(self):
+        raise NotImplementedError("Метод create_row должен быть реализован в подклассе")
+
+class ChoiceWidget(BaseWidget):
+    def create_row(self):
+        row = Adw.ComboRow(title=self.setting.name, subtitle=self.setting.help)
+        row.set_model(Gtk.StringList.new(list(self.setting.map.keys())))
+        row.set_selected(self.setting._get_selected_row_index())
+        row.connect("notify::selected", self._on_choice_changed)
+        return row
+
+    def _on_choice_changed(self, combo_row, _):
+        selected_value = list(self.setting.map.values())[combo_row.get_selected()]
+        self.setting._set_backend_value(selected_value)
+
+class BooleanWidget(BaseWidget):
+    def create_row(self):
+        row = Adw.SwitchRow(title=self.setting.name, subtitle=self.setting.help)
+        current_value = self.setting._get_backend_value()
+        row.set_active(current_value == self.setting.map.get(True))
+        row.connect("notify::active", self._on_boolean_toggled)
+        return row
+
+    def _on_boolean_toggled(self, switch, _):
+        value = self.setting.map.get(True) if switch.get_active() else self.setting.map.get(False)
+        self.setting._set_backend_value(value)
+
+class EntryWidget(BaseWidget):
+    def create_row(self):
+        row = Adw.EntryRow(title=self.setting.name)
+        row.set_show_apply_button(True)
+        row.set_text(self.setting._get_backend_value())
+        row.connect("apply", self._on_text_changed)
+        return row
+
+    def _on_text_changed(self, entry_row):
+        self.setting._set_backend_value(entry_row.get_text())
+
+class WidgetFactory:
+    widget_map = {
+        'choice': ChoiceWidget,
+        'boolean': BooleanWidget,
+        'entry': EntryWidget
+    }
+
+    @staticmethod
+    def create_widget(setting):
+        widget_class = WidgetFactory.widget_map.get(setting.type)
+        if widget_class:
+            return widget_class(setting)
+        else:
+            print(f"Неизвестный тип виджета: {setting.type}")
+            return None
 
 class Backend:
     def get_value(self, key, gtype):
@@ -28,7 +85,6 @@ class Backend:
 
     def set_value(self, key, value, gtype):
         raise NotImplementedError("Метод set_value должен быть реализован")
-
 
 class GSettingsBackend(Backend):
     def get_value(self, key, gtype):
@@ -88,60 +144,8 @@ class Setting:
         return {}
 
     def create_row(self):
-        if self.type == 'choice':
-            return self._create_choice_row()
-        elif self.type == 'boolean':
-            return self._create_boolean_row()
-        elif self.type == 'entry':
-            return self._create_entry_row()
-        else:
-            print(f"Неизвестный тип настройки: {self.type}")
-            return None
-
-    def _create_choice_row(self):
-        row = Adw.ComboRow(title=self.name, subtitle=self.help)
-        row.set_model(Gtk.StringList.new(list(self.map.keys())))
-        row.set_selected(self._get_selected_row_index())
-        row.connect("notify::selected", self._on_choice_changed)
-        return row
-
-    def _create_boolean_row(self):
-        if not self.map:
-            print(f"[WARNING] Используется дефолтная карта для {self.name}")
-            self.map = self._default_map()
-
-        row = Adw.SwitchRow(title=self.name, subtitle=self.help)
-        current_value = self._get_backend_value()
-        print(f"[DEBUG] Текущее значение для {self.key}: {current_value}")
-        row.set_active(current_value == self.map.get(True))
-        row.connect("notify::active", self._on_boolean_toggled)
-        return row
-
-    def _create_entry_row(self):
-        row = Adw.EntryRow(title=self.name)
-        row.set_show_apply_button(True)
-        row.set_text(self._get_backend_value())
-        row.connect("apply", self._on_text_changed)
-        return row
-
-    def _on_choice_changed(self, combo_row, _):
-        selected_value = list(self.map.values())[combo_row.get_selected()]
-        self._set_backend_value(selected_value)
-
-    def _on_boolean_toggled(self, switch, _):
-        if not self.map:
-            print(f"[WARNING] Карта пуста для {self.key}, используется дефолтная.")
-            self.map = self._default_map()
-
-        value = self.map.get(True) if switch.get_active() else self.map.get(False)
-        if value is None:
-            print(f"[ERROR] Некорректная карта для ключа {self.key}: {self.map}")
-        else:
-            print(f"[DEBUG] Установка значения для {self.key}: {value}")
-            self._set_backend_value(value)
-
-    def _on_text_changed(self, entry_row):
-        self._set_backend_value(entry_row.get_text())
+        widget = WidgetFactory.create_widget(self)
+        return widget.create_row() if widget else None
 
     def _get_selected_row_index(self):
         current_value = self._get_backend_value()
@@ -164,6 +168,15 @@ class Setting:
             print(f"Бекенд {self.backend} не зарегистрирован.")
         return backend
 
+class Section:
+    def __init__(self, section_data, strategy):
+        self.name = section_data['name']
+        self.weight = section_data.get('weight', 0)
+        self.settings = [Setting(s) for s in section_data.get('settings', [])]
+        self.strategy = strategy
+
+    def create_preferences_group(self):
+        return self.strategy.create_preferences_group(self)
 
 class SectionStrategy:
     def create_preferences_group(self, section):
@@ -206,18 +219,6 @@ class SectionFactory:
         if not strategy:
             raise ValueError(f"Неизвестный тип секции: {section_type}")
         return Section(section_data, strategy)
-
-
-class Section:
-    def __init__(self, section_data, strategy: SectionStrategy):
-        self.name = section_data['name']
-        self.weight = section_data.get('weight', 0)
-        self.settings = [Setting(s) for s in section_data.get('settings', [])]
-        self.strategy = strategy
-
-    def create_preferences_group(self):
-        return self.strategy.create_preferences_group(self)
-
 
 class Category:
     def __init__(self, category_data, section_factory: SectionFactory):
