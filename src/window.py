@@ -196,7 +196,7 @@ class NewSectionStrategy(SectionStrategy):
 class SectionFactory:
     def __init__(self):
         self.strategies = {
-            'classic': ClassicSectionStrategy(),\
+            'classic': ClassicSectionStrategy(),
         }
 
     def create_section(self, section_data):
@@ -291,3 +291,4 @@ class TuneitWindow(Adw.ApplicationWindow):
 
         if not self.main_pagestack:
             print("Ошибка: main_pagestack не найден.")
+
