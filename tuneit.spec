@@ -20,6 +20,7 @@ BuildRequires(pre): rpm-build-python3
 BuildRequires(pre): rpm-build-gir
 
 BuildRequires: libadwaita-gir-devel
+BuildRequires: blueprint-compiler
 BuildRequires: meson
 
 %add_python3_path %_datadir/%name

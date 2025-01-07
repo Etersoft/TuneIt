@@ -1,0 +1,78 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $TuneitWindow: Adw.ApplicationWindow {
+  content: Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      [end]
+      MenuButton {
+        icon-name: "open-menu-symbolic";
+        menu-model: primary_menu;
+        primary: true;
+        tooltip-text: _("Main Menu");
+      }
+
+      [title]
+      Adw.ViewSwitcher {
+        policy: wide;
+        stack: main_stack;
+      }
+    }
+
+    Adw.ViewStack main_stack {
+      Adw.ViewStackPage {
+        child: Box {
+          Adw.NavigationSplitView {
+            content: Adw.NavigationPage {
+              Stack main_pagestack {}
+            };
+
+            hexpand: true;
+
+            sidebar: Adw.NavigationPage {
+              Adw.ClampScrollable {
+                margin-bottom: 8;
+                margin-end: 8;
+                margin-start: 8;
+                margin-top: 8;
+
+                StackSidebar {
+                  stack: main_pagestack;
+                }
+              }
+            };
+          }
+        };
+
+        icon-name: "preferences-system";
+        name: "main";
+        title: "main";
+      }
+    }
+  };
+
+  default-height: 600;
+  default-width: 800;
+  title: _("TuneIt");
+}
+
+menu primary_menu {
+  section {
+    item {
+      action: "app.preferences";
+      label: _("_Preferences");
+    }
+
+    item {
+      action: "win.show-help-overlay";
+      label: _("_Keyboard Shortcuts");
+    }
+
+    item {
+      action: "app.about";
+      label: _("_About TuneIt");
+    }
+  }
+}
+
