@@ -42,3 +42,6 @@ tuneit_sources = [
 ]
 
 install_data(tuneit_sources, install_dir: moduledir)
+
+install_subdir('settings', install_dir: moduledir, strip_directory : false)
+install_subdir('shop', install_dir: moduledir, strip_directory : false)

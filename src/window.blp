@@ -25,7 +25,7 @@ template $TuneitWindow: Adw.ApplicationWindow {
         child: Box {
           Adw.NavigationSplitView {
             content: Adw.NavigationPage {
-              Stack main_pagestack {}
+              Stack settings_pagestack {}
             };
 
             hexpand: true;
@@ -38,7 +38,7 @@ template $TuneitWindow: Adw.ApplicationWindow {
                 margin-top: 8;
 
                 StackSidebar {
-                  stack: main_pagestack;
+                  stack: settings_pagestack;
                 }
               }
             };
@@ -46,8 +46,15 @@ template $TuneitWindow: Adw.ApplicationWindow {
         };
 
         icon-name: "preferences-system";
-        name: "main";
-        title: "main";
+        name: "settings";
+        title: _("Settings");
+      }
+
+      Adw.ViewStackPage {
+        child: Box {};
+        icon-name: "preferences-system";
+        name: "shop";
+        title: _("Shop");
       }
     }
   };
