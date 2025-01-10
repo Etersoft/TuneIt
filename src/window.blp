@@ -2,9 +2,22 @@ using Gtk 4.0;
 using Adw 1;
 
 template $TuneitWindow: Adw.ApplicationWindow {
-  content: Adw.ToolbarView {
+  Adw.Breakpoint {
+    condition ("max-width: 400sp")
+
+    setters {
+      header_bar.title-widget: null;
+      main_toolbar.top-bar-style: flat;
+      settinga_content_bar.visible: true;
+      switcher_bar.reveal: true;
+      settings_split_view.collapsed: true;
+    }
+  }
+  content: Adw.ToolbarView main_toolbar{
+    top-bar-style: raised_border;
+
     [top]
-    Adw.HeaderBar {
+    Adw.HeaderBar header_bar {
       [end]
       MenuButton {
         icon-name: "open-menu-symbolic";
@@ -23,13 +36,20 @@ template $TuneitWindow: Adw.ApplicationWindow {
     Adw.ViewStack main_stack {
       Adw.ViewStackPage {
         child: Box {
-          Adw.NavigationSplitView {
-            content: Adw.NavigationPage {
-              Stack settings_pagestack {}
-            };
-
+          Adw.NavigationSplitView settings_split_view {
             hexpand: true;
+            content: Adw.NavigationPage {
+              Adw.ToolbarView {
+                [top]
+                Adw.HeaderBar settinga_content_bar {
+                  decoration-layout: "";
+                  visible: false;
+                }
 
+                Stack settings_pagestack {}
+              }
+            };
+            
             sidebar: Adw.NavigationPage {
               Adw.ClampScrollable {
                 margin-bottom: 8;
@@ -37,8 +57,10 @@ template $TuneitWindow: Adw.ApplicationWindow {
                 margin-start: 8;
                 margin-top: 8;
 
-                StackSidebar {
-                  stack: settings_pagestack;
+                ListBox settings_listbox {
+                  styles [
+                    "navigation-sidebar",
+                  ]
                 }
               }
             };
@@ -57,6 +79,12 @@ template $TuneitWindow: Adw.ApplicationWindow {
         title: _("Shop");
       }
     }
+
+    [bottom]
+    Adw.ViewSwitcherBar switcher_bar {
+      stack: main_stack;
+    }
+
   };
 
   default-height: 600;

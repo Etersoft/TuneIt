@@ -124,10 +124,13 @@ class Category:
             else:
                 print(f"Секция {section.name} не создала виджетов.")
 
-        stack.add_child(box).set_title(self.name)
+        stack_page = stack.add_child(box)
+        stack_page.set_title(self.name)
+        stack_page.set_name(self.name)
 
 
-def init_settings_stack(stack):
+
+def init_settings_stack(stack, listbox, split_view):
     yaml_files_directory = "/usr/share/ximper-tuneit/modules"  # Укажите путь к папке с YAML файлами
     yaml_data = load_yaml_files_from_directory(yaml_files_directory)
     merged_data = merge_categories_by_name(yaml_data)
@@ -139,3 +142,28 @@ def init_settings_stack(stack):
         category.create_stack_page(stack)
     if not stack:
         print("Ошибка: settings_pagestack не найден.")
+
+    def populate_listbox_from_stack():
+        pages = stack.get_pages()
+        for i in range(pages.get_n_items()):
+            page = pages.get_item(i)
+            label = Gtk.Label(label=page.get_title(), xalign=0)
+
+            row = Gtk.ListBoxRow()
+            row.set_name(page.get_name())
+            row.set_child(label)
+
+            listbox.append(row)
+
+    def on_row_selected(listbox, row):
+        if row:
+            page_id = row.get_name()
+            print(f"Selected page: {page_id}")
+
+            visible_child = stack.get_child_by_name(page_id)
+            if visible_child:
+                stack.set_visible_child(visible_child)
+                split_view.set_show_content(True)
+
+    listbox.connect("row-selected", on_row_selected)
+    populate_listbox_from_stack()

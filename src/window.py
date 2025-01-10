@@ -26,10 +26,10 @@ class TuneitWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'TuneitWindow'
 
     settings_pagestack = Gtk.Template.Child()
+    settings_listbox = Gtk.Template.Child()
+    settings_split_view = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        init_settings_stack(self.settings_pagestack)
-
-
+        init_settings_stack(self.settings_pagestack, self.settings_listbox, self.settings_split_view)
