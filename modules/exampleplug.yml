@@ -1,4 +1,4 @@
-- name: "Some GNOME settings"
+- name: "Example"
   weight: 30
   sections:
     - name: Themes
@@ -56,3 +56,63 @@
           gtype: boolean
           backend: gsettings
           key: org.gnome.desktop.interface.enable-animations
+
+- name: "Example2"
+  weight: 30
+  sections:
+    - name: Themes2
+      type: classic
+      weight: 0
+      settings:
+        - name: IconTheme
+          type: entry
+          gtype: string
+          backend: gsettings
+          key: org.gnome.desktop.interface.icon-theme
+        - name: Style
+          type: choice
+          gtype: string
+          help: Prefer dark or light for Adwaita applications
+          backend: gsettings
+          key: org.gnome.desktop.interface.color-scheme
+          default: "default"
+          map:
+            Default: default
+            Light: prefer-light
+            Dark: prefer-dark
+    - name: Clock
+      weight: 10
+      settings:
+        - name: Weekday
+          type: boolean
+          gtype: boolean
+          backend: gsettings
+          key: org.gnome.desktop.interface.clock-show-weekday
+        - name: Date
+          type: boolean
+          gtype: boolean
+          backend: gsettings
+          key: org.gnome.desktop.interface.clock-show-date
+        - name: Seconds
+          type: boolean
+          gtype: boolean
+          backend: gsettings
+          key: org.gnome.desktop.interface.clock-show-seconds
+    - name: Battery
+      weight: 10
+      settings:
+        - name: Show percentage
+          type: boolean
+          gtype: boolean
+          backend: gsettings
+          key: org.gnome.desktop.interface.show-battery-percentage
+    - name: Performance
+      weight: 20
+      settings:
+        - name: Animations
+          help: Animations can be disabled for performance
+          type: boolean
+          gtype: boolean
+          backend: gsettings
+          key: org.gnome.desktop.interface.enable-animations
+
