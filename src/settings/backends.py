@@ -4,6 +4,9 @@ class Backend:
     def get_value(self, key, gtype):
         raise NotImplementedError("Метод get_value должен быть реализован")
 
+    def get_range(self, key, gtype):
+        raise NotImplementedError("Метод get_range должен быть реализован")
+
     def set_value(self, key, value, gtype):
         raise NotImplementedError("Метод set_value должен быть реализован")
 
@@ -17,6 +20,18 @@ class GSettingsBackend(Backend):
         try:
             value = schema.get_value(key_name)
             return value.unpack()
+        except Exception as e:
+            print(f"[ERROR] Ошибка при получении значения {key}: {e}")
+            return None
+
+    def get_range(self, key, gtype):
+        schema_name, key_name = key.rsplit('.', 1)
+        schema = Gio.Settings.new(schema_name)
+
+        print(f"[DEBUG] Получение значения: schema={schema_name}, key={key_name}, gtype={gtype}")
+        try:
+            value = schema.get_range(key_name)
+            return value.unpack()[1]
         except Exception as e:
             print(f"[ERROR] Ошибка при получении значения {key}: {e}")
             return None

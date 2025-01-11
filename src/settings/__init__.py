@@ -13,15 +13,24 @@ class Setting:
         self.backend = setting_data.get('backend')
         self.key = setting_data.get('key')
         self.default = setting_data.get('default')
-        self.map = setting_data.get('map', self._default_map())
-        if setting_data.get('gtype'):
+        if len(setting_data.get('gtype')) > 2:
             self.gtype = setting_data.get('gtype')[0]
+        self.map = setting_data.get('map', self._default_map())
         self.data = setting_data.get('data', {})
 
     def _default_map(self):
         if self.type == 'boolean':
             # Дефолтная карта для булевых настроек
             return {True: True, False: False}
+        if self.type == 'choice':
+            # Дефолтная карта для выборов
+            map = {}
+            range = self._get_backend_range()
+
+            for var in range:
+                print(var)
+                map[var[0].upper() + var[1:]] = var
+            return map
         return {}
 
     def create_row(self):
@@ -37,6 +46,11 @@ class Setting:
         if backend:
             return backend.get_value(self.key, self.gtype)
         return self.default
+
+    def _get_backend_range(self):
+        backend = self._get_backend()
+        if backend:
+            return backend.get_range(self.key, self.gtype)
 
     def _set_backend_value(self, value):
         backend = self._get_backend()
