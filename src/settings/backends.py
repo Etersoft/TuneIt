@@ -31,7 +31,7 @@ class GSettingsBackend(Backend):
         print(f"[DEBUG] Получение значения: schema={schema_name}, key={key_name}, gtype={gtype}")
         try:
             value = schema.get_range(key_name)
-            return value.unpack()[1]
+            return value.unpack()
         except Exception as e:
             print(f"[ERROR] Ошибка при получении значения {key}: {e}")
             return None

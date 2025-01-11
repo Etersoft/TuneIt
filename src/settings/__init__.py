@@ -27,11 +27,22 @@ class Setting:
         if self.type == 'choice':
             # Дефолтная карта для выборов
             map = {}
-            range = self._get_backend_range()
+            range = self._get_backend_range()[1]
 
             for var in range:
                 print(var)
                 map[var[0].upper() + var[1:]] = var
+            return map
+        if self.type == 'number':
+            map = {}
+            range = self._get_backend_range()[1]
+            map["upper"] = range[1]
+            map["lower"] = range[0]
+
+            # Кол-во после запятой
+            map["digits"] = len(str(range[0]).split('.')[-1]) if '.' in str(range[0]) else 0
+            # Минимальное число с этим количеством
+            map["step"] = 10 ** -map["digits"] if map["digits"] > 0 else 0
             return map
         return {}
 

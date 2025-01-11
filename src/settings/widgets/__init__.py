@@ -1,12 +1,15 @@
 from .BooleanWidget import BooleanWidget
 from .ChoiceWidget import ChoiceWidget
 from .EntryWidget import EntryWidget
+from .NumStepper import NumStepper
+
 
 class WidgetFactory:
     widget_map = {
         'choice': ChoiceWidget,
         'boolean': BooleanWidget,
-        'entry': EntryWidget
+        'entry': EntryWidget,
+        'number': NumStepper,
     }
 
     @staticmethod
