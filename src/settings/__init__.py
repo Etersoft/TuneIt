@@ -15,6 +15,8 @@ class Setting:
         self.default = setting_data.get('default')
         if len(setting_data.get('gtype')) > 2:
             self.gtype = setting_data.get('gtype')[0]
+        else:
+            self.gtype = setting_data.get('gtype')
         self.map = setting_data.get('map', self._default_map())
         self.data = setting_data.get('data', {})
 
