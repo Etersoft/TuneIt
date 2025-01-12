@@ -13,12 +13,14 @@ class Setting:
         self.backend = setting_data.get('backend')
         self.key = setting_data.get('key')
         self.default = setting_data.get('default')
-        if len(setting_data.get('gtype')) > 2:
-            self.gtype = setting_data.get('gtype')[0]
-        else:
-            self.gtype = setting_data.get('gtype')
+        self.gtype = setting_data.get('gtype', [])
         self.map = setting_data.get('map', self._default_map())
         self.data = setting_data.get('data', {})
+
+        if len(self.gtype) > 2:
+            self.gtype = self.gtype[0]
+        else:
+            self.gtype = self.gtype
 
     def _default_map(self):
         if self.type == 'boolean':
@@ -27,7 +29,10 @@ class Setting:
         if self.type == 'choice':
             # Дефолтная карта для выборов
             map = {}
-            range = self._get_backend_range()[1]
+            range = self._get_backend_range()
+
+            if range is None:
+                return {}
 
             for var in range:
                 print(var)
@@ -35,7 +40,11 @@ class Setting:
             return map
         if self.type == 'number':
             map = {}
-            range = self._get_backend_range()[1]
+            range = self._get_backend_range()
+
+            if range is None:
+                return {}
+
             map["upper"] = range[1]
             map["lower"] = range[0]
 
