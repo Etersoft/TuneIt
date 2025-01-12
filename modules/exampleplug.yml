@@ -159,3 +159,59 @@
           gtype: boolean
           backend: gsettings
           key: org.gnome.desktop.interface.enable-animations
+- name: "ThemeSwitcher"
+  weight: 25
+  sections:
+    - name: Themes
+      type: classic
+      weight: 0
+      settings:
+        - name: KV Light Theme
+          type: entry
+          gtype: string
+          backend: file
+          key: KV_LIGHT_THEME
+          help: Select the Kvantum light theme
+          default: KvLibadwaita
+          params:
+            file_path: "~/.config/ximper-unified-theme-switcher/themes"
+        - name: KV Dark Theme
+          type: entry
+          gtype: string
+          backend: file
+          key: KV_DARK_THEME
+          help: Select the Kvantum dark theme
+          default: KvLibadwaitaDark
+          params:
+            file_path: "~/.config/ximper-unified-theme-switcher/themes"
+        - name: GTK3 Light Theme
+          type: entry
+          gtype: string
+          backend: file
+          key: GTK3_LIGHT_THEME
+          help: Select the GTK3 light theme
+          default: adw-gtk3
+          params:
+            file_path: "~/.config/ximper-unified-theme-switcher/themes"
+        - name: GTK3 Dark Theme
+          type: entry
+          gtype: string
+          backend: file
+          key: GTK3_DARK_THEME
+          help: Select the GTK3 dark theme
+          default: adw-gtk3-dark
+          params:
+            file_path: "~/.config/ximper-unified-theme-switcher/themes"
+        - name: Current Theme
+          type: choice
+          gtype: string
+          backend: file
+          key: CURRENT_THEME
+          help: Define the current theme preference
+          default: "prefer-dark"
+          map:
+            Prefer Dark: prefer-dark
+            Prefer Light: prefer-light
+            Default: default
+          params:
+            file_path: "~/.config/ximper-unified-theme-switcher/themes"

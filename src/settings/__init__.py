@@ -8,9 +8,10 @@ from .widgets import WidgetFactory
 class Setting:
     def __init__(self, setting_data):
         self.name = setting_data['name']
+        self.backend = setting_data.get('backend')
+        self.params = setting_data.get('params', {})
         self.type = setting_data['type']
         self.help = setting_data.get('help', "")
-        self.backend = setting_data.get('backend')
         self.key = setting_data.get('key')
         self.default = setting_data.get('default')
         self.gtype = setting_data.get('gtype', [])
@@ -80,7 +81,8 @@ class Setting:
             backend.set_value(self.key, value, self.gtype)
 
     def _get_backend(self):
-        backend = backend_factory.get_backend(self.backend)
+        backend = backend_factory.get_backend(self.backend, self.params)
+
         if not backend:
             print(f"Бекенд {self.backend} не зарегистрирован.")
         return backend
