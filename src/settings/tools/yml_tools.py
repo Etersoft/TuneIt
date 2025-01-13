@@ -2,6 +2,23 @@ import os
 
 import yaml
 
+def get_local_share_directory():
+    home_directory = os.path.expanduser("~")
+    local_share_directory = os.path.join(home_directory, ".local", "share", "tuneit")
+    return local_share_directory
+
+
+def load_modules():
+    modules = []
+    local_share_directory = get_local_share_directory()
+    
+    modules_directory = os.path.join(local_share_directory, "modules")
+    if not os.path.exists(modules_directory):
+        print(f"Директория {modules_directory} не существует")
+        return modules
+    
+    modules = load_yaml_files_from_directory(modules_directory)
+    return modules
 
 def load_yaml_files_from_directory(directory):
     yaml_data = []
@@ -26,6 +43,7 @@ def merge_categories_by_name(categories_data):
         if category_name not in categories_dict:
             categories_dict[category_name] = category_data
         else:
-            categories_dict[category_name]['sections'].extend(category_data['sections'])
+            categories_dict[category_name]['sections'].extend(
+                category_data['sections'])
 
     return list(categories_dict.values())

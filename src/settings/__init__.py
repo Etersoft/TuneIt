@@ -1,7 +1,7 @@
 from gi.repository import Adw, Gtk
 
 from .backends import backend_factory
-from .tools.yml_tools import load_yaml_files_from_directory, merge_categories_by_name
+from .tools.yml_tools import load_modules, merge_categories_by_name
 from .widgets import WidgetFactory
 
 
@@ -166,11 +166,8 @@ class Category:
         stack_page.set_title(self.name)
         stack_page.set_name(self.name)
 
-
-
 def init_settings_stack(stack, listbox, split_view):
-    yaml_files_directory = "/usr/share/ximper-tuneit/modules"  # Укажите путь к папке с YAML файлами
-    yaml_data = load_yaml_files_from_directory(yaml_files_directory)
+    yaml_data = load_modules()
     merged_data = merge_categories_by_name(yaml_data)
     section_factory = SectionFactory()
 

@@ -28,7 +28,7 @@ conf.set('pkgdatadir', pkgdatadir)
 
 configure_file(
   input: 'tuneit.in',
-  output: 'ximper-tuneit',
+  output: 'tuneit',
   configuration: conf,
   install: true,
   install_dir: get_option('bindir'),
