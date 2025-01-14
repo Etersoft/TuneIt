@@ -38,12 +38,12 @@ where each setting is defined in separate files for flexibility and extensibilit
 
 %install
 %meson_install
-%find_lang %name
+%find_lang tuneit
 
-%files -f %name.lang
-%_bindir/%name
+%files -f tuneit.lang
+%_bindir/tuneit
 
-%_datadir/%name
+%_datadir/tuneit
 %_datadir/glib-2.0/schemas/*.gschema.xml
 %_datadir/metainfo/*.metainfo.xml
 
