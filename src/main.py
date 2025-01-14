@@ -31,7 +31,7 @@ class TuneitApplication(Adw.Application):
     """The main application singleton class."""
 
     def __init__(self):
-        super().__init__(application_id='ru.ximperlinux.TuteIt',
+        super().__init__(application_id='ru.ximperlinux.TuneIt',
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
         self.create_action('quit', lambda *_: self.quit(), ['<primary>q'])
         self.create_action('about', self.on_about_action)
@@ -51,7 +51,7 @@ class TuneitApplication(Adw.Application):
     def on_about_action(self, *args):
         """Callback for the app.about action."""
         about = Adw.AboutDialog(application_name='tuneit',
-                                application_icon='ru.ximperlinux.TuteIt',
+                                application_icon='ru.ximperlinux.TuneIt',
                                 developer_name='Etersoft',
                                 version='0.1.0',
                                 developers=['Ximper'],

@@ -47,7 +47,7 @@ where each setting is defined in separate files for flexibility and extensibilit
 %_datadir/glib-2.0/schemas/*.gschema.xml
 %_datadir/metainfo/*.metainfo.xml
 
-%_desktopdir/ru.ximperlinux.TuteIt.desktop
+%_desktopdir/ru.ximperlinux.TuneIt.desktop
 
 %_iconsdir/hicolor/*/apps/*.svg
 

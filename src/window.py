@@ -21,7 +21,7 @@ from gi.repository import Adw, Gtk
 
 from .settings import init_settings_stack
 
-@Gtk.Template(resource_path='/ru/ximperlinux/TuteIt/window.ui')
+@Gtk.Template(resource_path='/ru.ximperlinux.TuneIt/window.ui')
 class TuneitWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'TuneitWindow'
 

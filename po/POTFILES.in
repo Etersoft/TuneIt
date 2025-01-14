@@ -1,8 +1,8 @@
 # List of source files containing translatable strings.
 # Please keep this file sorted alphabetically.
-data/ru.ximperlinux.TuteIt.desktop.in
-data/ru.ximperlinux.TuteIt.metainfo.xml.in
-data/ru.ximperlinux.TuteIt.gschema.xml
+data/ru.ximperlinux.TuneIt.desktop.in
+data/ru.ximperlinux.TuneIt.metainfo.xml.in
+data/ru.ximperlinux.TuneIt.gschema.xml
 src/main.py
 src/window.py
 src/window.ui

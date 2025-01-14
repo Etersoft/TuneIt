@@ -1,5 +1,5 @@
 {
-    "id" : "ru.ximperlinux.TuteIt",
+    "id" : "ru.ximperlinux.TuneIt",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "47",
     "sdk" : "org.gnome.Sdk",

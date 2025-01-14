@@ -1,4 +1,4 @@
-application_id = 'ru.ximperlinux.TuteIt'
+application_id = 'ru.ximperlinux.TuneIt'
 
 scalable_dir = 'hicolor' / 'scalable' / 'apps'
 install_data(
