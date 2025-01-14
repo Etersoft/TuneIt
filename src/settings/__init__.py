@@ -171,6 +171,14 @@ def init_settings_stack(stack, listbox, split_view):
     merged_data = merge_categories_by_name(yaml_data)
     section_factory = SectionFactory()
 
+    if stack.get_pages():
+        print("Clear pages...")
+        listbox.remove_all()
+        for page in stack.get_pages():
+            stack.remove(page)
+    else:
+        print("First init...")
+
     categories = [Category(c, section_factory) for c in merged_data]
 
     for category in categories:

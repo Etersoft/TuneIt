@@ -17,7 +17,7 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import Adw, Gtk
+from gi.repository import GObject, Adw, Gtk
 
 from .settings import init_settings_stack
 
@@ -29,7 +29,19 @@ class TuneitWindow(Adw.ApplicationWindow):
     settings_listbox = Gtk.Template.Child()
     settings_split_view = Gtk.Template.Child()
 
+    @GObject.Signal
+    def settings_page_update(self):
+        pass
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.connect('settings_page_update', self.update_settings_page)
+        self.update_settings_page()
 
+    def update_settings_page(self, *args):
+        """
+        Можно вызвать вот так, благодаря сигналу:
+        self.settings_pagestack.get_root().emit("settings_page_update")
+        """
         init_settings_stack(self.settings_pagestack, self.settings_listbox, self.settings_split_view)
+        print("Stack cleared and initialized!")
