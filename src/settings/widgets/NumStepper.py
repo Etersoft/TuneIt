@@ -1,4 +1,3 @@
-from docutils.nodes import subtitle
 from gi.repository import Adw, Gtk
 from .BaseWidget import BaseWidget
 
