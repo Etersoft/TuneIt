@@ -4,6 +4,7 @@ from .backends import backend_factory
 from .daemon_client import dclient
 
 from .tools.yml_tools import load_modules, merge_categories_by_name
+from .tools.gvariant import convert_by_gvariant
 from .widgets import WidgetFactory
 
 
@@ -18,7 +19,9 @@ class Setting:
         self.key = setting_data.get('key')
         self.default = setting_data.get('default')
         self.gtype = setting_data.get('gtype', [])
-        self.map = setting_data.get('map', self._default_map())
+        self.map = setting_data.get('map')
+        if self.map is None:
+            self.map = self._default_map()
         self.data = setting_data.get('data', {})
 
         if len(self.gtype) > 2:
@@ -68,10 +71,15 @@ class Setting:
         return list(self.map.values()).index(current_value) if current_value in self.map.values() else 0
 
     def _get_backend_value(self):
+        value = None
+
         backend = self._get_backend()
+
         if backend:
-            return backend.get_value(self.key, self.gtype)
-        return self.default
+            value = backend.get_value(self.key, self.gtype)
+        if value is None:
+            value = self.default
+        return value
 
     def _get_backend_range(self):
         backend = self._get_backend()
@@ -81,7 +89,7 @@ class Setting:
     def _set_backend_value(self, value):
         backend = self._get_backend()
         if backend:
-            backend.set_value(self.key, value, self.gtype)
+            backend.set_value(self.key, convert_by_gvariant(value, self.gtype), self.gtype)
 
     def _get_backend(self):
         if self.root is True:

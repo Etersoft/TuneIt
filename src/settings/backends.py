@@ -67,11 +67,11 @@ class FileBackend(Backend):
         ext = ext.lower()
         if ext == '.json':
             return 'json'
-        elif ext == '.yaml' or ext == '.yml':
+        elif ext in ['.yaml', '.yml']:
             return 'yaml'
         elif ext == '.ini':
             return 'ini'
-        elif ext == '.sh' or ext == '.conf':
+        elif ext in ['.sh', '.conf']:
             return 'text'
         else:
             return 'text'
@@ -97,12 +97,15 @@ class FileBackend(Backend):
 
     def _write_file(self, data):
         try:
-            with open(self.file_path, 'w', encoding=self.encoding) as file:
+            with open(self.file_path, 'r+', encoding=self.encoding) as file:
                 if self.file_type == 'json':
+                    file.seek(0)
                     json.dump(data, file, indent=4)
                 elif self.file_type == 'yaml':
+                    file.seek(0)
                     yaml.dump(data, file, default_flow_style=False)
                 elif self.file_type == 'ini':
+                    file.seek(0)
                     config = ConfigParser()
                     for section, values in data.items():
                         config[section] = values
@@ -126,39 +129,47 @@ class FileBackend(Backend):
         return config
 
     def _write_text_config(self, file, data):
-        existing_lines = []
-        with open(self.file_path, 'r', encoding=self.encoding) as file_read:
-            existing_lines = file_read.readlines()
+        existing_lines = file.readlines()
+        style = self._detect_text_style(existing_lines)
 
-        existing_style = self._detect_text_style(existing_lines)
+        file.seek(0)
+        file.truncate()
+
+        for line in existing_lines:
+            if not line.strip() or line.startswith('#'):
+                file.write(line)
+            elif '=' in line:
+                key, _ = line.split('=', 1)
+                if key.strip() in data:
+                    if style == 'space_around':
+                        file.write(f"{key.strip()} = {data[key.strip()]}\n")
+                    elif style == 'no_space':
+                        file.write(f"{key.strip()}={data[key.strip()]}\n")
+                    else:
+                        file.write(f"{key.strip()} = {data[key.strip()]}\n")
+                else:
+                    file.write(line)
 
         for key, value in data.items():
-            if existing_style == 'space_around':
-                file.write(f"{key} = {value}\n")
-            elif existing_style == 'no_space':
-                file.write(f"{key}={value}\n")
-            else:
+            if not any(key.strip() == line.split('=', 1)[0].strip() for line in existing_lines):
                 file.write(f"{key} = {value}\n")
 
     def _detect_text_style(self, lines):
-        style = None
         for line in lines:
             line = line.strip()
             if '=' in line:
                 if line.startswith(' ') and line.endswith(' '):
-                    style = 'space_around'
-                    break
+                    return 'space_around'
                 elif line.find('=') == len(line.split('=')[0]):
-                    style = 'no_space'
-                    break
-        return style or 'space_around'
+                    return 'no_space'
+        return 'space_around'
 
     def get_value(self, key, gtype):
         data = self._read_file()
         if data is None:
             return None
 
-        if self.file_type == 'json' or self.file_type == 'yaml':
+        if self.file_type in ['json', 'yaml']:
             return data.get(key, None)
         elif self.file_type == 'ini':
             section, key_name = key.split('.', 1)
@@ -173,7 +184,7 @@ class FileBackend(Backend):
         if data is None:
             return None
 
-        if self.file_type == 'json' or self.file_type == 'yaml':
+        if self.file_type in ['json', 'yaml']:
             if isinstance(data.get(key), list):
                 return (min(data[key]), max(data[key]))
         elif self.file_type == 'ini':
@@ -185,7 +196,7 @@ class FileBackend(Backend):
         if data is None:
             return
 
-        if self.file_type == 'json' or self.file_type == 'yaml':
+        if self.file_type in ['json', 'yaml']:
             data[key] = value
         elif self.file_type == 'ini':
             section, key_name = key.split('.', 1)
