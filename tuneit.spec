@@ -53,6 +53,12 @@ where each setting is defined in separate files for flexibility and extensibilit
 
 %_iconsdir/hicolor/*/apps/*.svg
 
+
+%_sbindir/tuneit-daemon
+
+%_datadir/polkit-1/actions/*ximper*.policy
+%_sysconfdir/dbus-1/system.d/*ximper*.conf
+
 %changelog
 * Tue Dec 17 2024 Roman Alifanov <ximper@altlinux.org> 0.1.0-alt1
 - initial build

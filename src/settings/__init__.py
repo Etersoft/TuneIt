@@ -1,6 +1,8 @@
 from gi.repository import Adw, Gtk
 
 from .backends import backend_factory
+from .daemon_client import dclient
+
 from .tools.yml_tools import load_modules, merge_categories_by_name
 from .widgets import WidgetFactory
 
@@ -8,6 +10,7 @@ from .widgets import WidgetFactory
 class Setting:
     def __init__(self, setting_data):
         self.name = setting_data['name']
+        self.root = setting_data.get('root', False)
         self.backend = setting_data.get('backend')
         self.params = setting_data.get('params', {})
         self.type = setting_data['type']
@@ -81,7 +84,12 @@ class Setting:
             backend.set_value(self.key, value, self.gtype)
 
     def _get_backend(self):
-        backend = backend_factory.get_backend(self.backend, self.params)
+        if self.root is True:
+            backend = dclient
+            backend.set_backend_name(self.backend)
+            backend.set_backend_params(self.params)
+        else:
+            backend = backend_factory.get_backend(self.backend, self.params)
 
         if not backend:
             print(f"Бекенд {self.backend} не зарегистрирован.")

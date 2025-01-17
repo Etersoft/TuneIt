@@ -213,3 +213,19 @@ class BackendFactory:
 
 
 backend_factory = BackendFactory()
+
+class RootBackendFactory:
+    def __init__(self):
+        self.backends = {
+            'file': FileBackend,
+        }
+
+    def get_backend(self, backend_name, params=None):
+        backend_class = self.backends.get(backend_name)
+        if backend_class:
+            # Передаем параметры в конструктор бэкенда, если они есть
+            return backend_class(params) if params else backend_class()
+        return None
+
+
+root_backend_factory = RootBackendFactory()

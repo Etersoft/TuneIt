@@ -35,10 +35,20 @@ configure_file(
   install_mode: 'r-xr-xr-x'
 )
 
+configure_file(
+  input: 'daemon.in',
+  output: 'tuneit-daemon',
+  configuration: conf,
+  install: true,
+  install_dir: get_option('sbindir'),
+  install_mode: 'r-xr-xr-x'
+)
+
 tuneit_sources = [
   '__init__.py',
   'main.py',
   'window.py',
+  'daemon.py',
 ]
 
 install_data(tuneit_sources, install_dir: moduledir)

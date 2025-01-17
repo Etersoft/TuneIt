@@ -43,4 +43,12 @@ configure_file(
   install_dir: get_option('datadir') / 'dbus-1' / 'services'
 )
 
+install_data('ru.ximperlinux.TuneIt.Daemon.policy',
+  install_dir: get_option('datadir') / 'polkit-1' / 'actions'
+)
+
+install_data('ru.ximperlinux.TuneIt.Daemon.conf',
+  install_dir: get_option('sysconfdir') / 'dbus-1' / 'system.d'
+)
+
 subdir('icons')
