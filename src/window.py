@@ -17,7 +17,8 @@
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-from gi.repository import GObject, Adw, Gtk
+import threading
+from gi.repository import GObject, Adw, Gtk, GLib
 
 from .settings.main import init_settings_stack
 
@@ -38,10 +39,18 @@ class TuneitWindow(Adw.ApplicationWindow):
         self.connect('settings_page_update', self.update_settings_page)
         self.update_settings_page()
 
-    def update_settings_page(self, *args):
+    def update_settings_page(self):
+        thread = threading.Thread(target=self._update_settings_page)
+        thread.daemon = True
+        thread.start()
+
+    def _update_settings_page(self, *args):
         """
         Можно вызвать вот так, благодаря сигналу:
         self.settings_pagestack.get_root().emit("settings_page_update")
         """
-        init_settings_stack(self.settings_pagestack, self.settings_listbox, self.settings_split_view)
-        print("Stack cleared and initialized!")
+        init_settings_stack(
+            self.settings_pagestack,
+            self.settings_listbox,
+            self.settings_split_view,
+        )

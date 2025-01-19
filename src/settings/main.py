@@ -7,6 +7,9 @@ from .tools.yml_tools import load_modules, merge_categories_by_name
 from .tools.gvariant import convert_by_gvariant
 from .widgets import WidgetFactory
 
+from .widgets.service_dialog import ServiceNotStartedDialog
+
+dialog_presented = False
 
 class Setting:
     def __init__(self, setting_data):
@@ -69,8 +72,14 @@ class Setting:
                 widget = WidgetFactory.create_widget(self)
                 return widget.create_row() if widget else None
             else:
-                # TODO: Окно с предложением включить сервис
-                print("The service is unavailable, please enable dbus service")
+                global dialog_presented
+                if dialog_presented is False:
+                    from ..main import get_main_window
+
+                    dialog = ServiceNotStartedDialog()
+                    dialog.present(get_main_window())
+
+                    dialog_presented = True
                 return None
 
 

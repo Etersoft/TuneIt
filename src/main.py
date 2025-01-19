@@ -26,6 +26,8 @@ gi.require_version('Adw', '1')
 from gi.repository import Gtk, Gio, Adw
 from .window import TuneitWindow
 
+def get_main_window():
+    return _application.props.active_window
 
 class TuneitApplication(Adw.Application):
     """The main application singleton class."""
@@ -33,9 +35,12 @@ class TuneitApplication(Adw.Application):
     def __init__(self):
         super().__init__(application_id='ru.ximperlinux.TuneIt',
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+        global _application
         self.create_action('quit', lambda *_: self.quit(), ['<primary>q'])
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
+
+        _application = self
 
     def do_activate(self):
         """Called when the application is activated.

@@ -1,0 +1,54 @@
+import os
+import subprocess
+import sys
+
+from gi.repository import Adw
+
+class ServiceNotStartedDialog(Adw.AlertDialog):
+    def __init__(self):
+        super().__init__()
+
+        self.sname = 'tuneit-daemon'
+
+        self.set_heading("The dbus service is disabled.")
+        self.set_body("Do you want to enable it?")
+
+        self.add_response("yes", "Yes")
+        self.add_response("no", "No")
+
+        self.connect("response", self.on_response)
+
+    def on_response(self, dialog, response):
+        if response == "yes":
+            self.service_enable()
+            dialog.close()
+            os.execv(sys.argv[0], sys.argv)
+
+        elif response in ("no", "close"):
+            dialog.close()
+
+    def service_status(self):
+        try:
+            # Запускаем команду systemctl is-active <service_name>
+            result = subprocess.run(
+                ['systemctl', 'is-active', self.sname],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+            # Проверяем статус
+            if result.stdout.decode('utf-8').strip() == 'active':
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return False
+
+    def service_enable(self):
+        try:
+            subprocess.run(
+                ['pkexec', 'systemctl', '--now', 'enable', self.sname],
+                stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
