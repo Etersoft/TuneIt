@@ -63,6 +63,17 @@ class Setting:
         return {}
 
     def create_row(self):
+        if self.root is True:
+            print("Root is true")
+            if dclient is not None:
+                widget = WidgetFactory.create_widget(self)
+                return widget.create_row() if widget else None
+            else:
+                # TODO: Окно с предложением включить сервис
+                print("The service is unavailable, please enable dbus service")
+                return None
+
+
         widget = WidgetFactory.create_widget(self)
         return widget.create_row() if widget else None
 
@@ -123,14 +134,20 @@ class SectionStrategy:
 class ClassicSectionStrategy(SectionStrategy):
     def create_preferences_group(self, section):
         group = Adw.PreferencesGroup(title=section.name)
+        not_empty = False
+
         for setting in section.settings:
             row = setting.create_row()
             if row:
                 print(f"Добавление строки для настройки: {setting.name}")
                 group.add(row)
+                not_empty = True
             else:
                 print(f"Не удалось создать строку для настройки: {setting.name}")
-        return group
+        if not_empty:
+            return group
+        else:
+            return None
 
 
 class NewSectionStrategy(SectionStrategy):
@@ -171,16 +188,23 @@ class Category:
         clamp.set_child(pref_page)
         box.set_child(clamp)
 
+        not_empty = False
+
         for section in self.sections:
             preferences_group = section.create_preferences_group()
             if preferences_group:
                 pref_page.add(preferences_group)
+                not_empty = True
             else:
                 print(f"Секция {section.name} не создала виджетов.")
 
-        stack_page = stack.add_child(box)
-        stack_page.set_title(self.name)
-        stack_page.set_name(self.name)
+        if not_empty:
+            stack_page = stack.add_child(box)
+            stack_page.set_title(self.name)
+            stack_page.set_name(self.name)
+        else:
+            print(f"the category {self.name} is empty, ignored")
+
 
 def init_settings_stack(stack, listbox, split_view):
     yaml_data = load_modules()
