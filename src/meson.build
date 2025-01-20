@@ -2,9 +2,14 @@ pkgdatadir = get_option('prefix') / get_option('datadir') / meson.project_name()
 moduledir = pkgdatadir / 'tuneit'
 gnome = import('gnome')
 
+blp_search = run_command('find_blp.sh', '')
+
+
+blp_files = blp_search.stdout().splitlines()
+
 blueprints = custom_target('blueprints',
   input: files(
-    'window.blp',
+   blp_files,
   ),
   output: '.',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
@@ -53,5 +58,12 @@ tuneit_sources = [
 
 install_data(tuneit_sources, install_dir: moduledir)
 
-install_subdir('settings', install_dir: moduledir, strip_directory : false)
-install_subdir('shop', install_dir: moduledir, strip_directory : false)
+blp_search_settings = run_command('find_blp.sh', 'settings')
+blp_search_shop = run_command('find_blp.sh', 'shop')
+
+blp_files_settings = blp_search_settings.stdout().splitlines()
+blp_files_shop = blp_search_shop.stdout().splitlines()
+
+install_subdir('settings', install_dir: moduledir, strip_directory : false, exclude_files: blp_files_settings)
+
+install_subdir('shop', install_dir: moduledir, strip_directory : false, exclude_files: blp_files_shop)
