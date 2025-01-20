@@ -3,6 +3,10 @@
 data/ru.ximperlinux.TuneIt.desktop.in
 data/ru.ximperlinux.TuneIt.metainfo.xml.in
 data/ru.ximperlinux.TuneIt.gschema.xml
+data/ru.ximperlinux.TuneIt.Daemon.policy
+
 src/main.py
 src/window.py
 src/window.ui
+src/settings/main.py
+src/settings/widgets/service_dialog.py

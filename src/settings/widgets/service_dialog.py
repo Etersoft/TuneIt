@@ -10,11 +10,11 @@ class ServiceNotStartedDialog(Adw.AlertDialog):
 
         self.sname = 'tuneit-daemon'
 
-        self.set_heading("The dbus service is disabled.")
-        self.set_body("Do you want to enable it?")
+        self.set_heading(_("Dbus service is disabled or unresponsive."))
+        self.set_body(_("It is needed for modules that require root permissions.\nDo you want to try to turn on the service?\nTune It will restart after enabling the service."))
 
-        self.add_response("yes", "Yes")
-        self.add_response("no", "No")
+        self.add_response("yes", _("Yes"))
+        self.add_response("no", _("No"))
 
         self.connect("response", self.on_response)
 
