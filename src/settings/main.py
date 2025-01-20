@@ -188,10 +188,11 @@ class SectionFactory:
 class Category:
     def __init__(self, category_data, section_factory: SectionFactory):
         self.name = category_data['name']
+        self.icon_name = category_data.get('icon', 'preferences-system')
         self.weight = category_data.get('weight', 0)
         self.sections = [section_factory.create_section(s) for s in category_data.get('sections', [])]
 
-    def create_stack_page(self, stack):
+    def create_stack_page(self, stack, listbox):
         box = Gtk.ScrolledWindow()
         pref_page = Adw.PreferencesPage()
         clamp = Adw.Clamp()
@@ -212,6 +213,12 @@ class Category:
             stack_page = stack.add_child(box)
             stack_page.set_title(self.name)
             stack_page.set_name(self.name)
+
+            row = TuneItPanelRow()
+            row.set_name(self.name)
+            row.set_title(self.name)
+            row.icon_name = self.icon_name
+            listbox.append(row)
         else:
             print(f"the category {self.name} is empty, ignored")
 
@@ -232,21 +239,10 @@ def init_settings_stack(stack, listbox, split_view):
     categories = [Category(c, section_factory) for c in merged_data]
 
     for category in categories:
-        category.create_stack_page(stack)
+        category.create_stack_page(stack, listbox)
+
     if not stack:
         print("Ошибка: settings_pagestack не найден.")
-
-    def populate_listbox_from_stack():
-        pages = stack.get_pages()
-        for i in range(pages.get_n_items()):
-            page = pages.get_item(i)
-
-            row = TuneItPanelRow()
-            row.set_name(page.get_name())
-            row.set_title(page.get_title())
-            row.icon_name = "preferences-system"
-
-            listbox.append(row)
 
     def on_row_selected(listbox, row):
         if row:
@@ -259,4 +255,3 @@ def init_settings_stack(stack, listbox, split_view):
                 split_view.set_show_content(True)
 
     listbox.connect("row-selected", on_row_selected)
-    populate_listbox_from_stack()
