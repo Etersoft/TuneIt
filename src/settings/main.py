@@ -6,6 +6,7 @@ from .daemon_client import dclient
 from .tools.yml_tools import load_modules, merge_categories_by_name
 from .tools.gvariant import convert_by_gvariant
 from .widgets import WidgetFactory
+from .widgets.panel_row import TuneItPanelRow
 
 from .widgets.service_dialog import ServiceNotStartedDialog
 
@@ -239,11 +240,11 @@ def init_settings_stack(stack, listbox, split_view):
         pages = stack.get_pages()
         for i in range(pages.get_n_items()):
             page = pages.get_item(i)
-            label = Gtk.Label(label=page.get_title(), xalign=0)
 
-            row = Gtk.ListBoxRow()
+            row = TuneItPanelRow()
             row.set_name(page.get_name())
-            row.set_child(label)
+            row.set_title(page.get_title())
+            row.icon_name = "preferences-system"
 
             listbox.append(row)
 

@@ -1,0 +1,31 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $TuneItPanelRow: Adw.PreferencesRow {
+  child: Box {
+    spacing: 12;
+    margin-start: 6;
+    margin-end: 6;
+    margin-top: 12;
+    margin-bottom: 12;
+
+    Image thumbnail_image {
+      icon-name: bind template.icon-name;
+    }
+    
+    Box {
+      orientation: vertical;
+      
+      Label label {
+        label: bind template.title;
+      }
+
+      // Label sub_label {
+      //   label: bind template.subtitle;
+      //   styles [
+      //     "caption"
+      //   ]
+      // }
+    }
+  };
+}
