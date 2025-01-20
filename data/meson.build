@@ -51,4 +51,8 @@ install_data('ru.ximperlinux.TuneIt.Daemon.conf',
   install_dir: get_option('sysconfdir') / 'dbus-1' / 'system.d'
 )
 
+install_data('tuneit-daemon.service',
+  install_dir: get_option('systemd_unitdir')
+)
+
 subdir('icons')

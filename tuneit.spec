@@ -55,6 +55,7 @@ where each setting is defined in separate files for flexibility and extensibilit
 
 
 %_sbindir/tuneit-daemon
+%_unitdir/tuneit-daemon.service
 
 %_datadir/polkit-1/actions/*ximper*.policy
 %_sysconfdir/dbus-1/system.d/*ximper*.conf

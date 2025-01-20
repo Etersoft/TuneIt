@@ -1,0 +1,1 @@
+option('systemd_unitdir', type: 'string', value: '/usr/lib/systemd/system', description: 'Path to systemd unit directory')
