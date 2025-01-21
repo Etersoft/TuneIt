@@ -7,6 +7,6 @@ data/ru.ximperlinux.TuneIt.Daemon.policy
 
 src/main.py
 src/window.py
-src/window.ui
+src/window.blp
 src/settings/main.py
 src/settings/widgets/service_dialog.py
