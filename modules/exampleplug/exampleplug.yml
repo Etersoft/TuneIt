@@ -1,10 +1,18 @@
 - name: "Gnome"
-  icon: preferences-desktop-display-symbolic
   weight: 30
+  pages:
+    - name: "Appearance"
+      icon: preferences-desktop-display-symbolic
+    - name: "Date & Time"
+      icon: preferences-system-time-symbolic
+    - name: "Power"
+      icon: battery-symbolic
+    - name: "System"
+      icon: preferences-system-symbolic
   sections:
-    - name: Themes
-      type: classic
+    - name: "Themes"
       weight: 0
+      page: "Appearance"
       settings:
         - name: IconTheme
           type: entry
@@ -27,8 +35,9 @@
           gtype: string
           backend: gsettings
           key: org.gnome.desktop.background.picture-options
-    - name: Clock
+    - name: "Clock"
       weight: 10
+      page: "Date & Time"
       settings:
         - name: Weekday
           type: boolean
@@ -45,16 +54,18 @@
           gtype: boolean
           backend: gsettings
           key: org.gnome.desktop.interface.clock-show-seconds
-    - name: Battery
+    - name: "Battery"
       weight: 10
+      page: "Power"
       settings:
         - name: Show percentage
           type: boolean
           gtype: boolean
           backend: gsettings
           key: org.gnome.desktop.interface.show-battery-percentage
-    - name: Performance
+    - name: "Performance"
       weight: 20
+      page: "System"
       settings:
         - name: Animations
           help: Animations can be disabled for performance
@@ -63,12 +74,14 @@
           backend: gsettings
           key: org.gnome.desktop.interface.enable-animations
 - name: "Fonts"
-  icon: font-x-generic-symbolic
   weight: 1
+  pages:
+    - name: "Appearance"
+      icon: preferences-desktop-display-symbolic
   sections:
-    - name: Main
-      type: classic
+    - name: "Main"
       weight: 0
+      page: "Appearance"
       settings:
         - name: Antialiasing
           type: choice
@@ -104,12 +117,14 @@
             step: 0.01
             digits: 2
 - name: "GRUB"
-  icon: system-reboot-symbolic
   weight: 25
+  pages:
+    - name: "Boot"
+      icon: system-reboot-symbolic
   sections:
-    - name: Main
-      type: classic
+    - name: "Main"
       weight: 0
+      page: "Boot"
       settings:
         - name: Timeout
           root: true

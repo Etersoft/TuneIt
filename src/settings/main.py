@@ -125,12 +125,33 @@ class Setting:
         return backend
 
 
+class Module:
+    def __init__(self, module_data):
+        self.name = module_data['name']
+        self.weight = module_data.get('weight', 0)
+        self.pages = {
+            page['name']: page for page in module_data.get('pages', [])
+        }
+        self.sections = []
+
+    def add_section(self, section):
+        self.sections.append(section)
+
+    def get_sorted_sections(self):
+        # Сортируем секции по весу
+        return sorted(self.sections, key=lambda s: s.weight)
+
+
 class Section:
-    def __init__(self, section_data, strategy):
+    def __init__(self, section_data, strategy, module):
         self.name = section_data['name']
         self.weight = section_data.get('weight', 0)
+        self.page = section_data.get('page')
         self.settings = [Setting(s) for s in section_data.get('settings', [])]
         self.strategy = strategy
+        self.module = module
+
+        self.module.add_section(self)
 
     def create_preferences_group(self):
         return self.strategy.create_preferences_group(self)
@@ -176,21 +197,26 @@ class SectionFactory:
             'classic': ClassicSectionStrategy(),
         }
 
-    def create_section(self, section_data):
+    def create_section(self, section_data, module):
         section_type = section_data.get('type', 'classic')
 
         strategy = self.strategies.get(section_type)
         if not strategy:
             raise ValueError(f"Неизвестный тип секции: {section_type}")
-        return Section(section_data, strategy)
+        return Section(section_data, strategy, module)
 
 
-class Category:
-    def __init__(self, category_data, section_factory: SectionFactory):
-        self.name = category_data['name']
-        self.icon_name = category_data.get('icon', 'preferences-system')
-        self.weight = category_data.get('weight', 0)
-        self.sections = [section_factory.create_section(s) for s in category_data.get('sections', [])]
+class Page:
+    def __init__(self, name, icon=None):
+        self.name = name
+        self.icon = icon or "preferences-system"  # Значение по умолчанию
+        self.sections = []
+
+    def add_section(self, section):
+        self.sections.append(section)
+
+    def sort_sections(self):
+        self.sections = sorted(self.sections, key=lambda s: s.weight)
 
     def create_stack_page(self, stack, listbox):
         box = Gtk.ScrolledWindow()
@@ -217,16 +243,16 @@ class Category:
             row = TuneItPanelRow()
             row.set_name(self.name)
             row.set_title(self.name)
-            row.icon_name = self.icon_name
+            row.icon_name = self.icon
             listbox.append(row)
         else:
-            print(f"the category {self.name} is empty, ignored")
-
+            print(f"the page {self.name} is empty, ignored")
 
 def init_settings_stack(stack, listbox, split_view):
     yaml_data = load_modules()
-    merged_data = merge_categories_by_name(yaml_data)
     section_factory = SectionFactory()
+    modules_dict = {}
+    pages_dict = {}
 
     if stack.get_pages():
         print("Clear pages...")
@@ -236,10 +262,32 @@ def init_settings_stack(stack, listbox, split_view):
     else:
         print("First init...")
 
-    categories = [Category(c, section_factory) for c in merged_data]
+    for module_data in yaml_data:
+        module = Module(module_data)
+        modules_dict[module.name] = module
 
-    for category in categories:
-        category.create_stack_page(stack, listbox)
+        for section_data in module_data.get('sections', []):
+            page_name = section_data.get('page', 'Default')
+
+            if page_name not in pages_dict:
+                page_info = module.pages.get(page_name, {})
+                page = Page(
+                    name=page_name,
+                    icon=page_info.get('icon')
+                )
+                pages_dict[page_name] = page
+
+            section = section_factory.create_section(section_data, module)
+            pages_dict[page_name].add_section(section)
+
+    pages = list(pages_dict.values())
+    for page in pages:
+        page.sort_sections()
+
+    pages = sorted(pages, key=lambda p: p.name)
+
+    for page in pages:
+        page.create_stack_page(stack, listbox)
 
     if not stack:
         print("Ошибка: settings_pagestack не найден.")
