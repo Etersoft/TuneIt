@@ -1,7 +1,7 @@
 pluginsdir = pkgdatadir / 'modules'
 
 plugins = [
-  'exampleplug.yml',
+  'exampleplug',
 ]
 
-install_data(plugins, install_dir: pluginsdir)
+install_subdir(plugins, install_dir: pluginsdir)

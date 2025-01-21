@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="tuneit">
 	<schema id="ru.ximperlinux.TuneIt" path="/ru.ximperlinux.TuneIt/">
+        <key name="show_root_modules" type="b">
+			<default>false</default>
+            <description>Show modules that require root permissions</description>
+		</key>
 	</schema>
 </schemalist>
