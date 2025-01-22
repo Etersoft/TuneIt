@@ -3,7 +3,7 @@ from gi.repository import Adw, Gtk
 from .backends import backend_factory
 from .daemon_client import dclient
 
-from .tools.yml_tools import load_modules, merge_categories_by_name
+from .tools.yml_tools import load_modules
 from .tools.gvariant import convert_by_gvariant
 from .widgets import WidgetFactory
 from .widgets.panel_row import TuneItPanelRow

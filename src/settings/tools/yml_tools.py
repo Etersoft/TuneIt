@@ -43,15 +43,3 @@ def load_yaml_files_from_directory(directory):
                     except yaml.YAMLError as e:
                         print(f"Ошибка при чтении файла {file_path}: {e}")
     return yaml_data
-
-def merge_categories_by_name(categories_data):
-    categories_dict = {}
-    for category_data in categories_data:
-        category_name = category_data['name']
-        if category_name not in categories_dict:
-            categories_dict[category_name] = category_data
-        else:
-            categories_dict[category_name]['sections'].extend(
-                category_data['sections'])
-
-    return list(categories_dict.values())
