@@ -31,15 +31,16 @@ def load_modules():
 
 def load_yaml_files_from_directory(directory):
     yaml_data = []
-    for root, _, files in os.walk(directory):
-        for file in files:
-            if file.endswith(".yml") or file.endswith(".yaml"):
-                file_path = os.path.join(root, file)
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    try:
-                        data = yaml.safe_load(f)
-                        if data:
-                            yaml_data.extend(data)
-                    except yaml.YAMLError as e:
-                        print(f"Ошибка при чтении файла {file_path}: {e}")
+    for file in os.listdir(directory):
+        if file.endswith(".yml") or file.endswith(".yaml"):
+            file_path = os.path.join(directory, file)
+            with open(file_path, 'r', encoding='utf-8') as f:
+                try:
+                    data = yaml.safe_load(f)
+                    if data:
+                        for item in data:
+                            item['module_path'] = directory
+                        yaml_data.extend(data)
+                except yaml.YAMLError as e:
+                    print(f"Ошибка при чтении файла {file_path}: {e}")
     return yaml_data

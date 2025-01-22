@@ -1,5 +1,9 @@
 from gi.repository import Adw, Gtk
 
+import os
+import gettext
+import locale
+
 from .backends import backend_factory
 from .daemon_client import dclient
 
@@ -13,20 +17,34 @@ from .widgets.service_dialog import ServiceNotStartedDialog
 dialog_presented = False
 
 class Setting:
-    def __init__(self, setting_data):
-        self.name = setting_data['name']
+    def __init__(self, setting_data, module):
+        self._ = module.get_translation
+
+        self.name = self._(setting_data['name'])
+
         self.root = setting_data.get('root', False)
+
         self.backend = setting_data.get('backend')
         self.params = setting_data.get('params', {})
         self.type = setting_data['type']
-        self.help = setting_data.get('help', "")
+
+        self.help = setting_data.get('help', None)
+        if self.help is not None:
+            self.help = self._(self.help)
+
         self.key = setting_data.get('key')
         self.default = setting_data.get('default')
         self.gtype = setting_data.get('gtype', [])
+
         self.map = setting_data.get('map')
         if self.map is None:
             self.map = self._default_map()
-        self.data = setting_data.get('data', {})
+
+        if isinstance(self.map, dict) and self.type == 'choice':
+            self.map = {
+                self._(key) if isinstance(key, str) else key: value
+                for key, value in self.map.items()
+            }
 
         if len(self.gtype) > 2:
             self.gtype = self.gtype[0]
@@ -124,30 +142,50 @@ class Setting:
             print(f"Бекенд {self.backend} не зарегистрирован.")
         return backend
 
-
 class Module:
     def __init__(self, module_data):
         self.name = module_data['name']
         self.weight = module_data.get('weight', 0)
+        self.path = module_data.get("module_path")
+        print(self.path)
         self.pages = {
             page['name']: page for page in module_data.get('pages', [])
         }
         self.sections = []
+        self.system_lang_code = self.get_system_language()
 
     def add_section(self, section):
         self.sections.append(section)
 
     def get_sorted_sections(self):
-        # Сортируем секции по весу
         return sorted(self.sections, key=lambda s: s.weight)
+
+    @staticmethod
+    def get_system_language():
+        lang, _ = locale.getdefaultlocale()
+        return lang.split('_')[0] if lang else 'en'
+
+    def get_translation(self, text, lang_code=None):
+        if text.startswith('_'):
+            text = text[1:]
+
+        locales_path = os.path.join(self.path, "locale")
+
+        if os.path.exists(locales_path):
+            text = gettext.translation(
+                domain='messages',
+                localedir=locales_path,
+                fallback=True
+            ).gettext(text)
+        return text
 
 
 class Section:
     def __init__(self, section_data, strategy, module):
-        self.name = section_data['name']
+        self.name = module.get_translation(section_data['name'])
         self.weight = section_data.get('weight', 0)
         self.page = section_data.get('page')
-        self.settings = [Setting(s) for s in section_data.get('settings', [])]
+        self.settings = [Setting(s, module) for s in section_data.get('settings', [])]
         self.strategy = strategy
         self.module = module
 
@@ -267,13 +305,20 @@ def init_settings_stack(stack, listbox, split_view):
         modules_dict[module.name] = module
 
         for section_data in module_data.get('sections', []):
-            page_name = section_data.get('page', 'Default')
+            page_name = module.get_translation(section_data.get('page', 'Default'))
+            module_page_name = section_data.get('page', 'Default')
+            print(module_page_name)
 
             if page_name not in pages_dict:
-                page_info = module.pages.get(page_name, {})
+
+                page_info = (
+                    module.pages.get(f"_{module_page_name}", {})
+                    or module.pages.get(module_page_name, {})
+                )
+
                 page = Page(
                     name=page_name,
-                    icon=page_info.get('icon')
+                    icon=page_info.get('icon'),
                 )
                 pages_dict[page_name] = page
 
