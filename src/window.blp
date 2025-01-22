@@ -2,22 +2,36 @@ using Gtk 4.0;
 using Adw 1;
 
 template $TuneitWindow: Adw.ApplicationWindow {
+  width-request: 360;
+  height-request: 294;
+  default-height: 600;
+  default-width: 800;
+  title: _("TuneIt");
+
   Adw.Breakpoint {
-    condition ("max-width: 400sp")
+    condition ("max-width: 500sp")
 
     setters {
-      header_bar.title-widget: null;
-      main_toolbar.top-bar-style: flat;
-      settinga_content_bar.visible: true;
-      switcher_bar.reveal: true;
+      header_view_switcher.visible: false;
+      main_toolbar.reveal-bottom-bars: true;
+      main_toolbar.reveal-top-bars: false;
       settings_split_view.collapsed: true;
     }
   }
-  content: Adw.ToolbarView main_toolbar{
-    top-bar-style: raised_border;
+
+  content: Adw.ToolbarView main_toolbar {
+    top-bar-style: raised;
+    bottom-bar-style: raised;
+    reveal-bottom-bars: false;
 
     [top]
     Adw.HeaderBar header_bar {
+      [title]
+      Adw.ViewSwitcher header_view_switcher {
+        policy: wide;
+        stack: main_stack;
+      }
+
       [end]
       MenuButton {
         icon-name: "open-menu-symbolic";
@@ -25,71 +39,89 @@ template $TuneitWindow: Adw.ApplicationWindow {
         primary: true;
         tooltip-text: _("Main Menu");
       }
-
-      [title]
-      Adw.ViewSwitcher {
-        policy: wide;
-        stack: main_stack;
-      }
     }
 
     Adw.ViewStack main_stack {
       Adw.ViewStackPage {
-        child: Box {
-          Adw.NavigationSplitView settings_split_view {
-            hexpand: true;
-            content: Adw.NavigationPage {
-              Adw.ToolbarView {
-                [top]
-                Adw.HeaderBar settinga_content_bar {
-                  decoration-layout: "";
-                  visible: false;
-                }
-
-                Stack settings_pagestack {}
-              }
-            };
-            
-            sidebar: Adw.NavigationPage {
-              Adw.ClampScrollable {
-                margin-bottom: 8;
-                margin-end: 8;
-                margin-start: 8;
-                margin-top: 8;
-
-                ListBox settings_listbox {
-                  styles [
-                    "navigation-sidebar",
-                  ]
-                }
-              }
-            };
-          }
-        };
-
         icon-name: "preferences-system";
         name: "settings";
         title: _("Settings");
+
+        child: Adw.NavigationSplitView settings_split_view {
+          hexpand: true;
+
+          content: Adw.NavigationPage {
+            title: bind settings_pagestack.visible-child-name;
+
+            Adw.ToolbarView {
+              reveal-top-bars: bind main_toolbar.reveal-top-bars inverted;
+
+              [top]
+              Adw.HeaderBar header_bar2 {
+                [end]
+                MenuButton {
+                  icon-name: "open-menu-symbolic";
+                  menu-model: primary_menu;
+                  primary: true;
+                  tooltip-text: _("Main Menu");
+                }
+              }
+
+              Stack settings_pagestack {}
+            }
+          };
+
+          sidebar: Adw.NavigationPage {
+            title: _("Sections");
+
+            Adw.ToolbarView {
+              reveal-top-bars: bind main_toolbar.reveal-top-bars inverted;
+
+              [top]
+              Adw.HeaderBar {
+                [end]
+                MenuButton {
+                  icon-name: "open-menu-symbolic";
+                  menu-model: primary_menu;
+                  primary: true;
+                  tooltip-text: _("Main Menu");
+                }
+              }
+
+              ScrolledWindow {
+                propagate-natural-height: true;
+                hscrollbar-policy: never;
+
+                Adw.Clamp {
+                  maximum-size: 500;
+
+                  ListBox settings_listbox {
+                    styles [
+                      "navigation-sidebar",
+                    ]
+                  }
+                }
+              }
+            }
+          };
+        };
       }
 
       Adw.ViewStackPage {
-        child: Box {};
         icon-name: "preferences-system";
         name: "shop";
         title: _("Shop");
+
+        child: Box {};        
       }
     }
 
     [bottom]
     Adw.ViewSwitcherBar switcher_bar {
+      reveal: true;
       stack: main_stack;
     }
-
   };
-
-  default-height: 600;
-  default-width: 800;
-  title: _("TuneIt");
 }
 
 menu primary_menu {
@@ -110,4 +142,3 @@ menu primary_menu {
     }
   }
 }
-
