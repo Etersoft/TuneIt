@@ -2,7 +2,7 @@ pkgdatadir = get_option('prefix') / get_option('datadir') / meson.project_name()
 moduledir = pkgdatadir / 'tuneit'
 gnome = import('gnome')
 
-blp_search = run_command('find_blp.sh', '')
+blp_search = run_command('find_blp.sh', '', check: true)
 
 
 blp_files = blp_search.stdout().splitlines()
@@ -58,8 +58,8 @@ tuneit_sources = [
 
 install_data(tuneit_sources, install_dir: moduledir)
 
-blp_search_settings = run_command('find_blp.sh', 'settings')
-blp_search_shop = run_command('find_blp.sh', 'shop')
+blp_search_settings = run_command('find_blp.sh', 'settings', check: true)
+blp_search_shop = run_command('find_blp.sh', 'shop', check: true)
 
 blp_files_settings = blp_search_settings.stdout().splitlines()
 blp_files_shop = blp_search_shop.stdout().splitlines()
