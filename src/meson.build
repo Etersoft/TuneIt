@@ -66,4 +66,4 @@ blp_files_shop = blp_search_shop.stdout().splitlines()
 
 install_subdir('settings', install_dir: moduledir, strip_directory : false, exclude_files: blp_files_settings)
 
-install_subdir('shop', install_dir: moduledir, strip_directory : false, exclude_files: blp_files_shop)
+# install_subdir('shop', install_dir: moduledir, strip_directory : false, exclude_files: blp_files_shop)
