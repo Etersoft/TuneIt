@@ -1,7 +1,7 @@
-pluginsdir = pkgdatadir / 'modules'
+modules_dir = pkgdatadir / 'modules'
 
 plugins = [
-  'exampleplug',
+  'example_module',
 ]
 
-install_subdir(plugins, install_dir: pluginsdir)
+install_subdir(plugins, install_dir: modules_dir)
