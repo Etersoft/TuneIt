@@ -20,7 +20,6 @@ class RadioChoiceWidget(BaseWidget):
             label=self.setting.name,
             halign=Gtk.Align.START
         )
-        title_label.add_css_class("heading")
 
         content_box.append(title_label)
 
