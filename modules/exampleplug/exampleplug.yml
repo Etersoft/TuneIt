@@ -95,7 +95,7 @@
             Standard (grayscale): grayscale
             None: none
         - name: Hinting
-          type: choice
+          type: choice_radio
           gtype: string
           help:
           backend: gsettings
