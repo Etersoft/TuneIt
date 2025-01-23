@@ -1,13 +1,12 @@
 using Gtk 4.0;
-using Adw 1;
 
-template $TuneItPanelRow: Adw.PreferencesRow {
-  child: Box {
+template $TuneItPanelRow: ListBoxRow {
+  Box {
     spacing: 12;
-    margin-start: 6;
-    margin-end: 6;
-    margin-top: 12;
-    margin-bottom: 12;
+    margin-top: 6;
+    margin-bottom: 6;
+    margin-start: 2;
+    margin-end: 2;
 
     Image thumbnail_image {
       icon-name: bind template.icon-name;
@@ -15,17 +14,28 @@ template $TuneItPanelRow: Adw.PreferencesRow {
     
     Box {
       orientation: vertical;
-      
-      Label label {
+      valign: center;
+      spacing: 2;
+
+      Label title_label {
         label: bind template.title;
+        halign: start;
+        justify: left;
+        wrap: true;
       }
 
-      // Label sub_label {
-      //   label: bind template.subtitle;
-      //   styles [
-      //     "caption"
-      //   ]
-      // }
+      Label subtitle_label {
+        styles [
+          "caption",
+          "dim-label",
+        ]
+
+        label: bind template.subtitle;
+        visible: bind template.subtitle-visible;
+        halign: start;
+        justify: left;
+        wrap: true;
+      }
     }
-  };
+  }
 }
