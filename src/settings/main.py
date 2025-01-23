@@ -257,11 +257,7 @@ class Page:
         self.sections = sorted(self.sections, key=lambda s: s.weight)
 
     def create_stack_page(self, stack, listbox):
-        box = Gtk.ScrolledWindow()
         pref_page = Adw.PreferencesPage()
-        clamp = Adw.Clamp()
-        clamp.set_child(pref_page)
-        box.set_child(clamp)
 
         not_empty = False
 
@@ -274,7 +270,7 @@ class Page:
                 print(f"Секция {section.name} не создала виджетов.")
 
         if not_empty:
-            stack_page = stack.add_child(box)
+            stack_page = stack.add_child(pref_page)
             stack_page.set_title(self.name)
             stack_page.set_name(self.name)
 
