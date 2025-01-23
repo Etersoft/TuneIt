@@ -275,9 +275,9 @@ class Page:
             stack_page.set_name(self.name)
 
             row = TuneItPanelRow()
-            row.set_name(self.name)
-            row.set_title(self.name)
-            row.icon_name = self.icon
+            row.props.name = self.name
+            row.props.title = self.name
+            row.props.icon_name = self.icon
             listbox.append(row)
         else:
             print(f"the page {self.name} is empty, ignored")
@@ -335,7 +335,7 @@ def init_settings_stack(stack, listbox, split_view):
 
     def on_row_selected(listbox, row):
         if row:
-            page_id = row.get_name()
+            page_id = row.props.name
             print(f"Selected page: {page_id}")
 
             visible_child = stack.get_child_by_name(page_id)
