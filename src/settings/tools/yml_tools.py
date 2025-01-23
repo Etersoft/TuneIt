@@ -31,6 +31,7 @@ def load_modules():
 
 def load_yaml_files_from_directory(directory):
     yaml_data = []
+
     for file in os.listdir(directory):
         if file.endswith(".yml") or file.endswith(".yaml"):
             file_path = os.path.join(directory, file)
@@ -43,4 +44,22 @@ def load_yaml_files_from_directory(directory):
                         yaml_data.extend(data)
                 except yaml.YAMLError as e:
                     print(f"Ошибка при чтении файла {file_path}: {e}")
+
+    sections_data = []
+    sections_directory = os.path.join(directory, 'sections')
+    if os.path.exists(sections_directory) and os.path.isdir(sections_directory):
+        for file in os.listdir(sections_directory):
+            if file.endswith(".yml") or file.endswith(".yaml"):
+                file_path = os.path.join(sections_directory, file)
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    try:
+                        data = yaml.safe_load(f)
+                        if data:
+                            sections_data.extend(data)
+                    except yaml.YAMLError as e:
+                        print(f"Ошибка при чтении файла {file_path}: {e}")
+
+    for module in yaml_data:
+        module['sections'] = sections_data
+
     return yaml_data
