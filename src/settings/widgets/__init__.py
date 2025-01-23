@@ -8,7 +8,7 @@ from .NumStepper import NumStepper
 class WidgetFactory:
     widget_map = {
         'choice': ChoiceWidget,
-        'radiochoice': RadioChoiceWidget,
+        'choice_radio': RadioChoiceWidget,
         'boolean': BooleanWidget,
         'entry': EntryWidget,
         'number': NumStepper,
