@@ -60,6 +60,8 @@ def load_yaml_files_from_directory(directory):
                         print(f"Ошибка при чтении файла {file_path}: {e}")
 
     for module in yaml_data:
-        module['sections'] = sections_data
-
+        if 'sections' in module:
+            module['sections'].extend(sections_data)
+        else:
+            module['sections'] = sections_data
     return yaml_data
