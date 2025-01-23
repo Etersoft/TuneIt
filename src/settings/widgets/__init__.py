@@ -1,5 +1,6 @@
 from .BooleanWidget import BooleanWidget
 from .ChoiceWidget import ChoiceWidget
+from .RadioChoiceWidget import RadioChoiceWidget
 from .EntryWidget import EntryWidget
 from .NumStepper import NumStepper
 
@@ -7,6 +8,7 @@ from .NumStepper import NumStepper
 class WidgetFactory:
     widget_map = {
         'choice': ChoiceWidget,
+        'radiochoice': RadioChoiceWidget,
         'boolean': BooleanWidget,
         'entry': EntryWidget,
         'number': NumStepper,
