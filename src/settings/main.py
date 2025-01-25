@@ -202,7 +202,7 @@ class SectionStrategy:
 
 class ClassicSectionStrategy(SectionStrategy):
     def create_preferences_group(self, section):
-        group = Adw.PreferencesGroup(title=section.name)
+        group = Adw.PreferencesGroup(title=section.name, description=section.module.name)
         not_empty = False
 
         for setting in section.settings:
