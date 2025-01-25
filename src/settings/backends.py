@@ -1,8 +1,5 @@
 from gi.repository import Gio, GLib
-import json
-import yaml
-import os
-from configparser import ConfigParser
+import os, re
 
 
 class Backend:
@@ -58,155 +55,134 @@ class GSettingsBackend(Backend):
 class FileBackend(Backend):
     def __init__(self, params=None):
         super().__init__(params)
-        self.file_path = os.path.expanduser(self.params.get('file_path'))
-        self.encoding = self.params.get('encoding', 'utf-8')
-        self.file_type = self._get_file_type()
+        self.file_path = os.path.expanduser(params.get('file_path'))
+        self.file_path = os.path.expandvars(self.file_path)
 
-    def _get_file_type(self):
-        _, ext = os.path.splitext(self.file_path)
-        ext = ext.lower()
-        if ext == '.json':
-            return 'json'
-        elif ext in ['.yaml', '.yml']:
-            return 'yaml'
-        elif ext == '.ini':
-            return 'ini'
-        elif ext in ['.sh', '.conf']:
-            return 'text'
-        else:
-            return 'text'
+        self.lines = []
+        self.vars = {}
+        self._parse_file()
 
-    def _read_file(self):
-        try:
-            with open(self.file_path, 'r', encoding=self.encoding) as file:
-                if self.file_type == 'json':
-                    return json.load(file)
-                elif self.file_type == 'yaml':
-                    return yaml.safe_load(file)
-                elif self.file_type == 'ini':
-                    config = ConfigParser()
-                    config.read_file(file)
-                    return config
-                elif self.file_type == 'text':
-                    return self._parse_text_config(file)
-                else:
-                    raise ValueError(f"Unsupported file type: {self.file_type}")
-        except Exception as e:
-            print(f"[ERROR] Ошибка при чтении файла {self.file_path}: {e}")
-            return None
+    def _parse_file(self):
+        if os.path.exists(self.file_path):
+            with open(self.file_path, 'r') as f:
+                self.lines = f.readlines()
 
-    def _write_file(self, data):
-        try:
-            with open(self.file_path, 'r+', encoding=self.encoding) as file:
-                if self.file_type == 'json':
-                    file.seek(0)
-                    json.dump(data, file, indent=4)
-                elif self.file_type == 'yaml':
-                    file.seek(0)
-                    yaml.dump(data, file, default_flow_style=False)
-                elif self.file_type == 'ini':
-                    file.seek(0)
-                    config = ConfigParser()
-                    for section, values in data.items():
-                        config[section] = values
-                    config.write(file)
-                elif self.file_type == 'text':
-                    self._write_text_config(file, data)
-                else:
-                    raise ValueError(f"Unsupported file type: {self.file_type}")
-        except Exception as e:
-            print(f"[ERROR] Ошибка при записи в файл {self.file_path}: {e}")
+        for line_num, line in enumerate(self.lines):
+            self._parse_line(line_num, line)
 
-    def _parse_text_config(self, file):
-        config = {}
-        for line in file:
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-            if '=' in line:
-                key, value = line.split('=', 1)
-                config[key.strip()] = value.strip()
-        return config
+    def _parse_line(self, line_num, line):
+        line = line.rstrip('\n')
+        parsed = {
+            'raw': line,
+            'active': True,
+            'var_name': None,
+            'value': None,
+            'comment': '',
+            'style': {}
+        }
 
-    def _write_text_config(self, file, data):
-        existing_lines = file.readlines()
-        style = self._detect_text_style(existing_lines)
+        if re.match(r'^\s*#', line):
+            parsed['active'] = False
+            line = re.sub(r'^\s*#', '', line, count=1)
 
-        file.seek(0)
-        file.truncate()
+        var_match = re.match(
+            r'^\s*([A-Za-z_][A-Za-z0-9_]*)\s*([=])\s*(.*?)(\s*(#.*)?)$',
+            line
+        )
 
-        for line in existing_lines:
-            if not line.strip() or line.startswith('#'):
-                file.write(line)
-            elif '=' in line:
-                key, _ = line.split('=', 1)
-                if key.strip() in data:
-                    if style == 'space_around':
-                        file.write(f"{key.strip()} = {data[key.strip()]}\n")
-                    elif style == 'no_space':
-                        file.write(f"{key.strip()}={data[key.strip()]}\n")
-                    else:
-                        file.write(f"{key.strip()} = {data[key.strip()]}\n")
-                else:
-                    file.write(line)
+        if var_match:
+            parsed['var_name'] = var_match.group(1)
+            parsed['value'] = self._parse_value(var_match.group(3))
+            parsed['comment'] = var_match.group(4) or ''
 
-        for key, value in data.items():
-            if not any(key.strip() == line.split('=', 1)[0].strip() for line in existing_lines):
-                file.write(f"{key} = {value}\n")
+            value_part = var_match.group(3)
+            parsed['style'] = {
+                'space_before': ' ' if ' ' in var_match.group(0).split('=')[0][-1:] else '',
+                'space_after': ' ' if ' ' in var_match.group(0).split('=')[1][:1] else '',
 
-    def _detect_text_style(self, lines):
-        for line in lines:
-            line = line.strip()
-            if '=' in line:
-                if line.startswith(' ') and line.endswith(' '):
-                    return 'space_around'
-                elif line.find('=') == len(line.split('=')[0]):
-                    return 'no_space'
-        return 'space_around'
+                'quote': self._detect_quote(var_match.group(3)),
+                'commented': not parsed['active']
+            }
+
+            if parsed['var_name'] not in self.vars:
+                self.vars[parsed['var_name']] = []
+            self.vars[parsed['var_name']].append((line_num, parsed))
+
+    @staticmethod
+    def _parse_value(value_str):
+        value_str = value_str.strip()
+
+        for quote in ['"', "'"]:
+
+            if value_str.startswith(quote) and value_str.endswith(quote):
+                return value_str[1:-1]
+
+        return value_str
+
+    @staticmethod
+    def _detect_quote(value_str):
+        value_str = value_str.strip()
+
+        if value_str.startswith('"') and value_str.endswith('"'):
+            return '"'
+        if value_str.startswith("'") and value_str.endswith("'"):
+            return "'"
+
+        return ''
+
+    def _get_style_template(self):
+        if not self.vars:
+            return {
+                'space_before': '',
+                'space_after': ' ',
+                'quote': '"',
+                'commented': False
+            }
+
+        last_var = next(reversed(self.vars.values()))[-1][1]
+
+        return last_var['style']
+
+    @staticmethod
+    def _build_line(key, value, style):
+        quote = style['quote']
+        value_str = f"{quote}{value}{quote}" if quote else str(value)
+
+        return (
+            f"{key}{style['space_before']}="
+            f"{style['space_after']}{value_str}"
+        )
+
+    def _save_file(self):
+        with open(self.file_path, 'w') as f:
+            f.writelines(self.lines)
 
     def get_value(self, key, gtype):
-        data = self._read_file()
-        if data is None:
-            return None
+        entries = self.vars.get(key, [])
 
-        if self.file_type in ['json', 'yaml']:
-            return data.get(key, None)
-        elif self.file_type == 'ini':
-            section, key_name = key.split('.', 1)
-            if section in data:
-                return data[section].get(key_name, None)
-        elif self.file_type == 'text':
-            return data.get(key, None)
-        return None
+        for entry in reversed(entries):
+            return entry[1]['value']
 
-    def get_range(self, key, gtype):
-        data = self._read_file()
-        if data is None:
-            return None
-
-        if self.file_type in ['json', 'yaml']:
-            if isinstance(data.get(key), list):
-                return (min(data[key]), max(data[key]))
-        elif self.file_type == 'ini':
-            pass
         return None
 
     def set_value(self, key, value, gtype):
-        data = self._read_file()
-        if data is None:
-            return
+        entries = self.vars.get(key, [])
+        style = self._get_style_template()
 
-        if self.file_type in ['json', 'yaml']:
-            data[key] = value
-        elif self.file_type == 'ini':
-            section, key_name = key.split('.', 1)
-            if section not in data:
-                data[section] = {}
-            data[section][key_name] = value
-        elif self.file_type == 'text':
-            data[key] = value
+        if entries:
+            line_num, last_entry = entries[-1]
+            style = last_entry['style']
+            line = self._build_line(key, value, style)
 
-        self._write_file(data)
+            self.lines[line_num] = line + '\n'
+
+            if last_entry['style']['commented']:
+                self.lines[line_num] = self.lines[line_num].lstrip('#')
+        else:
+            line = self._build_line(key, value, style)
+            self.lines.append(line + '\n')
+
+        self._save_file()
 
 class BackendFactory:
     def __init__(self):
