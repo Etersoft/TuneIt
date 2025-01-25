@@ -7,6 +7,8 @@
       icon: preferences-system-time-symbolic
     - name: "Power"
       icon: battery-symbolic
+    - name: "Keyboard"
+      icon: input-keyboard-symbolic
     - name: "System"
       icon: preferences-system-symbolic
     - name: "Boot"
@@ -14,6 +16,17 @@
     - name: "Fonts"
       icon: preferences-desktop-display-symbolic
   sections:
+    - name: "Lang"
+      weight: 0
+      page: "Keyboard"
+      settings:
+        - name: keyboard shortcut
+          type: choice
+          gtype: string
+          backend: binary
+          params:
+            binary_path: "bin/"
+            binary_name: "langswitch.sh"
     - name: "Themes"
       weight: 0
       page: "Appearance"
