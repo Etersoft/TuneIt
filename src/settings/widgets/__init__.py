@@ -3,10 +3,11 @@ from .ChoiceWidget import ChoiceWidget
 from .RadioChoiceWidget import RadioChoiceWidget
 from .EntryWidget import EntryWidget
 from .NumStepper import NumStepper
-
+from .FileChooser import FileChooser
 
 class WidgetFactory:
     widget_map = {
+        'file': FileChooser,
         'choice': ChoiceWidget,
         'choice_radio': RadioChoiceWidget,
         'boolean': BooleanWidget,

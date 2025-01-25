@@ -39,6 +39,20 @@
           gtype: string
           backend: gsettings
           key: org.gnome.desktop.background.picture-options
+        - name: Wallpaper
+          type: file
+          gtype: string
+          backend: gsettings
+          key: org.gnome.desktop.background.picture-uri
+          map:
+            extensions: ["*.png", "*.jpeg", "*.jpg", "*.svg", "*.webp"]
+        - name: Wallpaper (dark)
+          type: file
+          gtype: string
+          backend: gsettings
+          key: org.gnome.desktop.background.picture-uri-dark
+          map:
+            extensions: [ "*.png", "*.jpeg", "*.jpg", "*.svg", "*.webp" ]
     - name: "Clock"
       weight: 10
       page: "Date & Time"
@@ -133,3 +147,83 @@
             lower: 0
             step: 1
             digits: 0
+    - name: "Main"
+      weight: 0
+      page: "Dirs"
+      settings:
+      - name: Templates
+        type: file
+        gtype: s
+        backend: file
+        key: XDG_TEMPLATES_DIR
+        help: Select templates folder
+        params:
+          file_path: "~/.config/user-dirs.dirs"
+        map:
+          extensions: folder
+
+      - name: Public Share
+        type: file
+        gtype: s
+        backend: file
+        key: XDG_PUBLICSHARE_DIR
+        help: Select public share folder
+        params:
+          file_path: "~/.config/user-dirs.dirs"
+        map:
+          extensions: folder
+
+      - name: Documents
+        type: file
+        gtype: s
+        backend: file
+        key: XDG_DOCUMENTS_DIR
+        help: Select documents folder
+        params:
+          file_path: "~/.config/user-dirs.dirs"
+        map:
+          extensions: folder
+
+      - name: Music
+        type: file
+        gtype: s
+        backend: file
+        key: XDG_MUSIC_DIR
+        help: Select music folder
+        params:
+          file_path: "~/.config/user-dirs.dirs"
+        map:
+          extensions: folder
+
+      - name: Pictures
+        type: file
+        gtype: s
+        backend: file
+        key: XDG_PICTURES_DIR
+        help: Select pictures folder
+        params:
+          file_path: "~/.config/user-dirs.dirs"
+        map:
+          extensions: folder
+
+      - name: Videos
+        type: file
+        gtype: s
+        backend: file
+        key: XDG_VIDEOS_DIR
+        help: Select videos folder
+        params:
+          file_path: "~/.config/user-dirs.dirs"
+        map:
+          extensions: folder
+      
+      - name: Downloads
+        type: file
+        gtype: s
+        backend: file
+        key: XDG_DOWNLOAD_DIR
+        help: Select downloads folder
+        params:
+          file_path: "~/.config/user-dirs.dirs"
+        map:
+          extensions: folder
