@@ -25,7 +25,12 @@ class Setting:
         self.root = setting_data.get('root', False)
 
         self.backend = setting_data.get('backend')
-        self.params = setting_data.get('params', {})
+
+        self.params = {
+            **setting_data.get('params', {}),
+            'module_path': module.path
+        }
+
         self.type = setting_data['type']
 
         self.help = setting_data.get('help', None)
