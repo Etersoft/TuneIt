@@ -1,5 +1,6 @@
 from gi.repository import Adw, Gtk
 from gi.repository import Gio
+import os
 
 from .BaseWidget import BaseWidget
 
@@ -7,7 +8,6 @@ from .BaseWidget import BaseWidget
 class FileChooser(BaseWidget):
     def create_row(self):
         self.value_separated = False
-
         self.multiple_mode = self.setting.map.get('multiple', False)
         self.folder_mode = 'folder' in self.setting.map.get('extensions', [])
 
@@ -17,7 +17,12 @@ class FileChooser(BaseWidget):
             subtitle_selectable=True
         )
 
-        control_box = Gtk.Box(spacing=6, margin_end=12)
+        control_box = Gtk.Box(
+            spacing=6,
+            margin_end=12,
+            halign=Gtk.Align.END
+        )
+        control_box.append(self.reset_revealer)
 
         if not self.multiple_mode and not self.folder_mode:
             self.entry = Gtk.Entry(
@@ -45,8 +50,62 @@ class FileChooser(BaseWidget):
         control_box.append(self.select_button)
 
         row.add_suffix(control_box)
+
         self._update_display()
+
+        self._update_reset_visibility()
+
         return row
+
+    def _on_reset_clicked(self, button):
+        default_value = self.setting.default
+
+        if default_value is not None:
+            if isinstance(default_value, str) and default_value.startswith("file://"):
+                default_value = default_value[7:]
+
+            self.setting._set_backend_value(default_value)
+
+            self._update_display()
+
+            self._update_reset_visibility()
+
+    def _update_reset_visibility(self):
+        current_value = self.setting._get_backend_value()
+        default_value = self.setting.default
+
+
+        if isinstance(current_value, str) and current_value.startswith("file://"):
+            current_value = current_value[7:]
+
+        if current_value:
+            current_value = os.path.expanduser(current_value)
+            current_value = os.path.expandvars(current_value)
+
+        if default_value:
+            default_value = os.path.expanduser(default_value)
+            default_value = os.path.expandvars(default_value)
+
+        self.reset_revealer.set_reveal_child(
+            current_value != default_value if default_value is not None
+            else False
+        )
+
+    def _update_display(self):
+        current = self.setting._get_backend_value()
+
+        self._update_reset_visibility()
+
+        if current and isinstance(current, str) and current.startswith("file://"):
+            current = current[7:]
+            self.value_separated = True
+
+        if self.folder_mode:
+            self._update_folder_display(current)
+        elif self.multiple_mode:
+            self._update_multiple_files_display(current)
+        else:
+            self._update_single_file_display(current)
 
     def _on_button_clicked(self, button):
         dialog = Gtk.FileDialog()
@@ -60,8 +119,12 @@ class FileChooser(BaseWidget):
 
         # Установка начальной директории
         current = self.setting._get_backend_value()
+
         if current:
             try:
+                current = os.path.expanduser(current)
+                current = os.path.expandvars(current)
+
                 current_file = Gio.File.new_for_path(current)
                 parent = current_file.get_parent() if not self.folder_mode else current_file
                 dialog.set_initial_folder(parent)
@@ -108,8 +171,8 @@ class FileChooser(BaseWidget):
         try:
             file = dialog.open_finish(result)
             if file:
-                self.setting._set_backend_value(file.get_path() if self.value_separated is False
-                                                else f"file://{file.get_path()}")
+                self.setting._set_backend_value(file.get_path())
+
                 self._update_display()
         except Exception as e:
             print(f"File selection error: {e}")
@@ -133,19 +196,6 @@ class FileChooser(BaseWidget):
         except Exception as e:
             print(f"Folder selection error: {e}")
 
-    def _update_display(self):
-        current = self.setting._get_backend_value()
-        if current.startswith("file://"):
-            current = current[7:]
-            self.value_separated = True
-
-        if self.folder_mode:
-            self._update_folder_display(current)
-        elif self.multiple_mode:
-            self._update_multiple_files_display(current)
-        else:
-            self._update_single_file_display(current)
-
     def _update_folder_display(self, current):
         if current:
             folder = Gio.File.new_for_path(current)
@@ -166,9 +216,8 @@ class FileChooser(BaseWidget):
             self.entry.set_tooltip_text(None)
 
     def _on_entry_changed(self, entry):
-        if (not self.folder_mode and
-            not self.multiple_mode and
-            not self.setting._get_backend() is not None):
+        if not self.folder_mode and not self.multiple_mode:
             path = entry.get_text().strip()
-            self.setting._set_backend_value(path if self.value_separated is False
-                                                else f"file://{path}")
+            self.setting._set_backend_value(path)
+
+            self._update_reset_visibility()

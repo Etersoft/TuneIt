@@ -36,6 +36,7 @@
           gtype: string
           backend: gsettings
           key: org.gnome.desktop.interface.icon-theme
+          default: "Adwaita"
         - name: Style
           type: choice
           gtype: string
@@ -74,6 +75,7 @@
           type: boolean
           gtype: boolean
           backend: gsettings
+          default: true
           key: org.gnome.desktop.interface.clock-show-weekday
         - name: Date
           type: boolean
@@ -136,6 +138,7 @@
           gtype: d
           backend: gsettings
           key: org.gnome.desktop.interface.text-scaling-factor
+          default: 1.0
           map:
             upper: 3.0
             lower: 0.5
@@ -192,6 +195,7 @@
         backend: file
         key: XDG_DOCUMENTS_DIR
         help: Select documents folder
+        default: "~/Документы"
         params:
           file_path: "~/.config/user-dirs.dirs"
         map:
@@ -236,6 +240,7 @@
         backend: file
         key: XDG_DOWNLOAD_DIR
         help: Select downloads folder
+        default: "~/Загрузки"
         params:
           file_path: "~/.config/user-dirs.dirs"
         map:

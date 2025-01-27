@@ -114,6 +114,9 @@ class Setting:
         current_value = self._get_backend_value()
         return list(self.map.values()).index(current_value) if current_value in self.map.values() else 0
 
+    def _get_default_row_index(self):
+        return list(self.map.values()).index(self.default) if self.default in self.map.values() else None
+
     def _get_backend_value(self):
         value = None
 

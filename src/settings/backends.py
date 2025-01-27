@@ -169,6 +169,9 @@ class FileBackend(Backend):
         entries = self.vars.get(key, [])
         style = self._get_style_template()
 
+        key = os.path.expanduser(key)
+        key = os.path.expandvars(key)
+
         if entries:
             line_num, last_entry = entries[-1]
             style = last_entry['style']
