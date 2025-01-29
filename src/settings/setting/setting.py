@@ -36,7 +36,7 @@ class Setting:
         if self.map is None:
             self.map = self._default_map()
 
-        if isinstance(self.map, dict) and self.type == 'choice':
+        if isinstance(self.map, dict) and 'choice' in self.type:
             self.map = {
                 self._(key) if isinstance(key, str) else key: value
                 for key, value in self.map.items()
@@ -51,7 +51,7 @@ class Setting:
         if self.type == 'boolean':
             # Дефолтная карта для булевых настроек
             return {True: True, False: False}
-        if self.type == 'choice':
+        if 'choice' in self.type:
             # Дефолтная карта для выборов
             map = {}
             range = self._get_backend_range()
