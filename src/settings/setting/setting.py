@@ -1,3 +1,4 @@
+from ..searcher import SearcherFactory
 from .widgets import WidgetFactory
 from ..backends import backend_factory
 from ..daemon_client import dclient
@@ -32,9 +33,20 @@ class Setting:
         self.default = setting_data.get('default')
         self.gtype = setting_data.get('gtype', [])
 
+        self.search_target = setting_data.get('search_target', None)
+
         self.map = setting_data.get('map')
         if self.map is None:
-            self.map = self._default_map()
+            if self.search_target is not None:
+                self.map = SearcherFactory.create(self.search_target).search()
+            else:
+                self.map = self._default_map()
+
+        if isinstance(self.map, list) and 'choice' in self.type:
+            self.map = {
+                item.title(): item for item in self.map
+            }
+
 
         if isinstance(self.map, dict) and 'choice' in self.type:
             self.map = {
