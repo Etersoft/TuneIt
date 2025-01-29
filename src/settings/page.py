@@ -1,6 +1,6 @@
 from gi.repository import Adw
 
-from src.settings.widgets.panel_row import TuneItPanelRow
+from .widgets.panel_row import TuneItPanelRow
 
 
 class Page:
