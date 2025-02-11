@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tuneit\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-21 13:16+0300\n"
-"PO-Revision-Date: 2025-01-21 13:18+0300\n"
+"POT-Creation-Date: 2025-02-11 15:59+0300\n"
+"PO-Revision-Date: 2025-02-11 16:01+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -26,7 +26,7 @@ msgstr ""
 msgid "GTK;"
 msgstr ""
 
-#: data/ru.ximperlinux.TuneIt.metainfo.xml.in:7 src/window.blp:92
+#: data/ru.ximperlinux.TuneIt.metainfo.xml.in:7 src/window.blp:9
 msgid "TuneIt"
 msgstr ""
 
@@ -52,29 +52,45 @@ msgstr "Показывать модули которым нужны root пра�
 msgid "translator-credits"
 msgstr "ximper@etersoft.ru"
 
-#: src/window.blp:26
+#: src/window.blp:40 src/window.blp:66 src/window.blp:87
 msgid "Main Menu"
 msgstr ""
 
-#: src/window.blp:72
+#: src/window.blp:48
 msgid "Settings"
 msgstr "Настройки"
 
-#: src/window.blp:79
+#: src/window.blp:75
+msgid "Sections"
+msgstr ""
+
+#: src/window.blp:113
 msgid "Shop"
 msgstr "Магазин"
 
-#: src/window.blp:99
+#: src/window.blp:131
 msgid "_Preferences"
 msgstr ""
 
-#: src/window.blp:104
+#: src/window.blp:136
 msgid "_Keyboard Shortcuts"
 msgstr ""
 
-#: src/window.blp:109
+#: src/window.blp:141
 msgid "_About TuneIt"
 msgstr "О программе"
+
+#: src/settings/widgets/deps_alert_dialog.blp:5
+msgid "The module has unmet dependencies"
+msgstr "Модуль имеет неудовлетворенные зависимости"
+
+#: src/settings/widgets/deps_alert_dialog.blp:8
+msgid "Ignore"
+msgstr "Игнорировать"
+
+#: src/settings/widgets/deps_alert_dialog.blp:9
+msgid "Skip module"
+msgstr "Пропустить модуль"
 
 #: src/settings/widgets/service_dialog.py:13
 msgid "Dbus service is disabled or unresponsive."

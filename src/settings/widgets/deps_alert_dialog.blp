@@ -1,0 +1,18 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $TuneItDepsAlertDialog: Adw.AlertDialog {
+  heading: _("The module has unmet dependencies");
+
+  responses [
+    close: _("Ignore") destructive,
+    skip: _("Skip module") suggested,
+  ]
+  
+  close-response: "close";
+  
+  extra-child: Gtk.TextView{
+      wrap-mode: word_char;
+      buffer: Gtk.TextBuffer deps_message_textbuffer {};
+    };
+}

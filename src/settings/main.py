@@ -3,13 +3,17 @@ from .page import Page
 from .sections import SectionFactory
 
 from .tools.yml_tools import load_modules
+from .widgets.deps_alert_dialog import TuneItDepsAlertDialog
 
+from .deps import DependencyManager
 
 def init_settings_stack(stack, listbox, split_view):
     yaml_data = load_modules()
     section_factory = SectionFactory()
     modules_dict = {}
     pages_dict = {}
+
+    dep_manager = DependencyManager()
 
     if stack.get_pages():
         print("Clear pages...")
@@ -18,8 +22,33 @@ def init_settings_stack(stack, listbox, split_view):
             stack.remove(page)
     else:
         print("First init...")
-
+    
     for module_data in yaml_data:
+        deps_results = dep_manager.verify_deps(module_data.get('deps', {}))
+        conflicts_results = dep_manager.verify_conflicts(module_data.get('conflicts', {}))
+
+        deps_message = dep_manager.format_results(deps_results)
+        conflicts_message = dep_manager.format_results(conflicts_results)
+
+        all_deps_ok = all(r['success'] for r in deps_results)
+        all_conflicts_ok = all(r['success'] for r in conflicts_results)
+
+        if all_deps_ok and all_conflicts_ok:
+            print("Deps: OK")
+        else:
+            dialog = TuneItDepsAlertDialog()
+            dialog.set_body(module_data['name'])
+
+            dialog.deps_message_textbuffer.set_text(
+                f"{deps_message}\n{conflicts_message}"
+            )
+            
+            response = dialog.user_question(listbox.get_root())
+            
+            print(f"RESPONSE: {response}")
+            if response == "skip":
+                break
+
         module = Module(module_data)
         modules_dict[module.name] = module
 

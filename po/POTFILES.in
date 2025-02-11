@@ -9,4 +9,6 @@ src/main.py
 src/window.py
 src/window.blp
 src/settings/main.py
+src/settings/deps.py
+src/settings/widgets/deps_alert_dialog.blp
 src/settings/widgets/service_dialog.py
