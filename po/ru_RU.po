@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tuneit\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-11 15:59+0300\n"
-"PO-Revision-Date: 2025-02-11 16:01+0300\n"
+"POT-Creation-Date: 2025-02-14 00:07+0300\n"
+"PO-Revision-Date: 2025-02-14 00:11+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
@@ -48,7 +48,7 @@ msgid "Show modules that require root permissions"
 msgstr "Показывать модули которым нужны root права"
 
 #. Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
-#: src/main.py:65
+#: src/main.py:68
 msgid "translator-credits"
 msgstr "ximper@etersoft.ru"
 
@@ -85,6 +85,7 @@ msgid "The module has unmet dependencies"
 msgstr "Модуль имеет неудовлетворенные зависимости"
 
 #: src/settings/widgets/deps_alert_dialog.blp:8
+#: src/settings/widgets/error_dialog.blp:9
 msgid "Ignore"
 msgstr "Игнорировать"
 
@@ -113,6 +114,18 @@ msgstr "Да"
 #: src/settings/widgets/service_dialog.py:17
 msgid "No"
 msgstr "Нет"
+
+#: src/settings/widgets/error_dialog.blp:5
+msgid "Error in Tune it!"
+msgstr "Ошибка в Tune It!"
+
+#: src/settings/widgets/error_dialog.blp:6
+msgid "You can write in an official telegram chat by applying this log."
+msgstr "Вы можете написать в официальный телеграм чат с приложенным логом."
+
+#: src/settings/widgets/error_dialog.blp:10
+msgid "Copy the log and go to telegram chat"
+msgstr "Скопировать в лог и перейти в телеграм чат"
 
 #~ msgid "You need root rights to read and modify system configs."
 #~ msgstr "Вам нужны права суперпользователя (root), чтобы читать и изменять конфигм системы."
