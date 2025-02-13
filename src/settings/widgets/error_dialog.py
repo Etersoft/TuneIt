@@ -1,5 +1,5 @@
 import webbrowser
-from gi.repository import Adw, Gtk, Gdk
+from gi.repository import Adw, Gtk, Gdk, Gio
 
 @Gtk.Template(resource_path='/ru.ximperlinux.TuneIt/settings/widgets/error_dialog.ui')
 class TuneItErrorDialog(Adw.AlertDialog):
@@ -16,8 +16,12 @@ class TuneItErrorDialog(Adw.AlertDialog):
             self.on_copy()
 
     def on_copy(self):
-        self.copy_error()
-        webbrowser.open("https://t.me/tuneit")
+        app_info = Gio.AppInfo.get_default_for_uri_scheme('tg')
+    
+        if app_info:
+            Gio.AppInfo.launch_default_for_uri('tg://resolve?domain=tuneit', None)
+        else:
+            webbrowser.open("https://t.me/tuneit")
 
     def copy_error(self):
         display = Gdk.Display.get_default()
