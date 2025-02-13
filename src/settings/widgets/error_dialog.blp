@@ -1,0 +1,25 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $TuneItErrorDialog: Adw.AlertDialog {
+  heading: _("Error in Tune it!");
+  body: _("You can write in an official telegram chat by applying this log.");
+
+  responses [
+    close: _("Ignore") destructive,
+    copy: _("Copy the log and go to telegram chat") suggested,
+  ]
+  
+  close-response: "close";
+
+  extra-child: Gtk.ScrolledWindow {
+    hscrollbar-policy: never;
+    vscrollbar-policy: automatic;
+
+    height-request: 185;
+    Gtk.TextView{
+      wrap-mode: word_char;
+      buffer: Gtk.TextBuffer textbuffer {};
+    }
+  };
+}

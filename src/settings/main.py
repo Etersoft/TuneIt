@@ -1,3 +1,4 @@
+import traceback
 from .module import Module
 from .page import Page
 from .sections import SectionFactory
@@ -24,54 +25,63 @@ def init_settings_stack(stack, listbox, split_view):
         print("First init...")
     
     for module_data in yaml_data:
-        deps_results = dep_manager.verify_deps(module_data.get('deps', {}))
-        conflicts_results = dep_manager.verify_conflicts(module_data.get('conflicts', {}))
-
-        deps_message = dep_manager.format_results(deps_results)
-        conflicts_message = dep_manager.format_results(conflicts_results)
-
-        all_deps_ok = all(r['success'] for r in deps_results)
-        all_conflicts_ok = all(r['success'] for r in conflicts_results)
-
-        if all_deps_ok and all_conflicts_ok:
-            print("Deps: OK")
-        else:
-            dialog = TuneItDepsAlertDialog()
-            dialog.set_body(module_data['name'])
-
-            dialog.deps_message_textbuffer.set_text(
-                f"{deps_message}\n{conflicts_message}"
-            )
-            
-            response = dialog.user_question(listbox.get_root())
-            
-            print(f"RESPONSE: {response}")
-            if response == "skip":
-                break
-
         module = Module(module_data)
-        modules_dict[module.name] = module
 
-        for section_data in module_data.get('sections', []):
-            page_name = module.get_translation(section_data.get('page', 'Default'))
-            module_page_name = section_data.get('page', 'Default')
-            print(module_page_name)
+        try:
+            deps_results = dep_manager.verify_deps(module_data.get('deps', {}))
+            conflicts_results = dep_manager.verify_conflicts(module_data.get('conflicts', {}))
 
-            if page_name not in pages_dict:
+            deps_message = dep_manager.format_results(deps_results)
+            conflicts_message = dep_manager.format_results(conflicts_results)
 
-                page_info = (
-                    module.pages.get(f"_{module_page_name}", {})
-                    or module.pages.get(module_page_name, {})
+            all_deps_ok = all(r['success'] for r in deps_results)
+            all_conflicts_ok = all(r['success'] for r in conflicts_results)
+
+            if all_deps_ok and all_conflicts_ok:
+                print("Deps: OK")
+            else:
+                dialog = TuneItDepsAlertDialog()
+                dialog.set_body(module_data['name'])
+
+                dialog.deps_message_textbuffer.set_text(
+                    f"{deps_message}\n{conflicts_message}"
                 )
+                
+                response = dialog.user_question(listbox.get_root())
+                
+                print(f"RESPONSE: {response}")
+                if response == "skip":
+                    break
+            modules_dict[module.name] = module
+            
+            for section_data in module_data.get('sections', []):
+                page_name = module.get_translation(section_data.get('page', 'Default'))
+                module_page_name = section_data.get('page', 'Default')
+                print(module_page_name)
 
-                page = Page(
-                    name=page_name,
-                    icon=page_info.get('icon'),
-                )
-                pages_dict[page_name] = page
+                if page_name not in pages_dict:
 
-            section = section_factory.create_section(section_data, module)
-            pages_dict[page_name].add_section(section)
+                    page_info = (
+                        module.pages.get(f"_{module_page_name}", {})
+                        or module.pages.get(module_page_name, {})
+                    )
+
+                    page = Page(
+                        name=page_name,
+                        icon=page_info.get('icon'),
+                    )
+                    pages_dict[page_name] = page
+
+                section = section_factory.create_section(section_data, module)
+                pages_dict[page_name].add_section(section)
+        except Exception as e:
+            from ..main import get_error
+            error = get_error()
+            
+            full_traceback = traceback.format_exc()
+            e = f"Module '{module.name}' loading error \nError: {e}\nFull traceback:\n{full_traceback}"
+
+            error(e)
 
     pages = list(pages_dict.values())
     for page in pages:

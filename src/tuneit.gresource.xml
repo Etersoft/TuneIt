@@ -4,6 +4,7 @@
     <file preprocess="xml-stripblanks">window.ui</file>
     <file preprocess="xml-stripblanks">settings/widgets/panel_row.ui</file>
     <file preprocess="xml-stripblanks">settings/widgets/deps_alert_dialog.ui</file>
+    <file preprocess="xml-stripblanks">settings/widgets/error_dialog.ui</file>
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
   </gresource>
 </gresources>

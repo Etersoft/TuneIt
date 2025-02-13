@@ -29,6 +29,9 @@ from .window import TuneitWindow
 def get_main_window():
     return _application.props.active_window
 
+def get_error():
+    return _application.props.active_window.error
+
 class TuneitApplication(Adw.Application):
     """The main application singleton class."""
 
