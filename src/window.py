@@ -63,5 +63,6 @@ class TuneitWindow(Adw.ApplicationWindow):
             self.error(traceback.format_exc())
 
     def error(self, error):
+        print(error)
         self.error_dialog.textbuffer.set_text(str(error))
         self.error_dialog.present(self)
