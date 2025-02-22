@@ -4,6 +4,7 @@ from .RadioChoiceWidget import RadioChoiceWidget
 from .EntryWidget import EntryWidget
 from .NumStepper import NumStepper
 from .FileChooser import FileChooser
+from .ButtonWidget import ButtonWidget
 
 class WidgetFactory:
     widget_map = {
@@ -13,6 +14,7 @@ class WidgetFactory:
         'boolean': BooleanWidget,
         'entry': EntryWidget,
         'number': NumStepper,
+        'button': ButtonWidget,
     }
 
     @staticmethod
