@@ -84,6 +84,13 @@ class RadioChoiceWidget(BaseWidget):
 
         return main_box
 
+    def update_display(self):
+        current_value = self.setting._get_backend_value()
+        for value, radio in self.radio_buttons.items():
+            with radio.handler_block_by_func(self._on_toggle):
+                radio.set_active(value == current_value)
+        self._update_reset_visibility()
+
     def _on_toggle(self, button, value):
         if button.get_active():
             self.setting._set_backend_value(value)
@@ -97,8 +104,8 @@ class RadioChoiceWidget(BaseWidget):
             self.setting._set_backend_value(default_value)
 
             if default_value in self.radio_buttons:
-                self.radio_buttons[default_value].set_active(True)
-
+                with self.radio_buttons[default_value].handler_block_by_func(self._on_toggle):
+                    self.radio_buttons[default_value].set_active(True)
             self._update_reset_visibility()
 
     def _update_reset_visibility(self):

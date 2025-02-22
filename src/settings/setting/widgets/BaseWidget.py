@@ -21,9 +21,17 @@ class BaseWidget:
             reveal_child=False,
             halign=Gtk.Align.END
         )
+    def update_display(self):
+        raise NotImplementedError("update_display method should be implemented in the subclass")
+
+    def set_visible(self, visible: bool):
+        self.row.set_visible(visible)
+        
+    def set_enabled(self, enabled: bool):
+        self.row.set_sensitive(enabled)
 
     def create_row(self):
-        raise NotImplementedError("Метод create_row должен быть реализован в подклассе")
+        raise NotImplementedError("create_row method should be implemented in the subclass")
 
     def _on_reset_clicked(self, button):
-        raise NotImplementedError("Метод _on_reset_clicked должен быть реализован в подклассе")
+        raise NotImplementedError("_on_reset_clicked method should be implemented in the subclass")

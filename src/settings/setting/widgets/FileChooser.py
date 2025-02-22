@@ -51,7 +51,7 @@ class FileChooser(BaseWidget):
 
         row.add_suffix(control_box)
 
-        self._update_display()
+        self.update_display()
 
         self._update_reset_visibility()
 
@@ -66,7 +66,7 @@ class FileChooser(BaseWidget):
 
             self.setting._set_backend_value(default_value)
 
-            self._update_display()
+            self.update_display()
 
             self._update_reset_visibility()
 
@@ -91,10 +91,8 @@ class FileChooser(BaseWidget):
             else False
         )
 
-    def _update_display(self):
+    def update_display(self):
         current = self.setting._get_backend_value()
-
-        self._update_reset_visibility()
 
         if current and isinstance(current, str) and current.startswith("file://"):
             current = current[7:]
@@ -106,6 +104,8 @@ class FileChooser(BaseWidget):
             self._update_multiple_files_display(current)
         else:
             self._update_single_file_display(current)
+
+        self._update_reset_visibility()
 
     def _on_button_clicked(self, button):
         dialog = Gtk.FileDialog()
@@ -173,7 +173,7 @@ class FileChooser(BaseWidget):
             if file:
                 self.setting._set_backend_value(file.get_path())
 
-                self._update_display()
+                self.update_display()
         except Exception as e:
             print(f"File selection error: {e}")
 
@@ -183,7 +183,7 @@ class FileChooser(BaseWidget):
             if file_list:
                 paths = [f.get_path() for f in file_list]
                 self.setting._set_backend_value(paths)
-                self._update_display()
+                self.update_display()
         except Exception as e:
             print(f"Multiple files selection error: {e}")
 
@@ -192,7 +192,7 @@ class FileChooser(BaseWidget):
             folder = dialog.select_folder_finish(result)
             if folder:
                 self.setting._set_backend_value(folder.get_path())
-                self._update_display()
+                self.update_display()
         except Exception as e:
             print(f"Folder selection error: {e}")
 

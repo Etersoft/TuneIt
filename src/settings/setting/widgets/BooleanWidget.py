@@ -26,6 +26,9 @@ class BooleanWidget(BaseWidget):
         self.switch.set_active(is_active)
         self._update_reset_visibility()
 
+    def update_display(self):
+        self._update_initial_state()
+    
     def _on_boolean_toggled(self, switch, _):
         value = self.setting.map.get(True) if switch.get_active() else self.setting.map.get(False)
         self.setting._set_backend_value(value)

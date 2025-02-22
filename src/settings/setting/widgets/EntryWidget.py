@@ -9,7 +9,7 @@ class EntryWidget(BaseWidget):
         self.entry = Gtk.Entry()
         self.entry.set_halign(Gtk.Align.CENTER)
 
-        self.entry.set_text(self.setting._get_backend_value() or "")
+        self.entry.set_text(str(self.setting._get_backend_value() or ""))
 
         self.entry.connect("activate", self._on_text_changed)
 
@@ -30,6 +30,12 @@ class EntryWidget(BaseWidget):
 
         return self.row
 
+    def update_display(self):
+        with self.entry.handler_block_by_func(self._on_text_changed):
+            current_value = self.setting._get_backend_value()
+            self.entry.set_text(str(current_value) if current_value is not None else "")
+        self._update_reset_visibility()
+
     def _on_text_changed(self, entry):
         new_value = entry.get_text()
 
@@ -41,14 +47,13 @@ class EntryWidget(BaseWidget):
         default_value = self.setting.default
 
         self.setting._set_backend_value(default_value)
-        self.entry.set_text(str(default_value))
-
+        self.entry.set_text(str(default_value) if default_value is not None else "")
         self._update_reset_visibility()
 
     def _update_reset_visibility(self):
-        current_value = self.entry.get_text() or ""
-        default_value = self.setting.default
+        current_value = self.entry.get_text()
 
+        default_value = str(self.setting.default) if self.setting.default is not None else ""
         has_default = self.setting.default is not None
         is_default = current_value == default_value
 

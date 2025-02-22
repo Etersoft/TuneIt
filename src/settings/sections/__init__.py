@@ -1,9 +1,11 @@
 from .classic import ClassicSection
+from .custom import CustomSection
 
 class SectionFactory:
     def __init__(self):
         self.sections = {
             'classic': ClassicSection,
+            'custom': CustomSection,
         }
 
     def create_section(self, section_data, module):

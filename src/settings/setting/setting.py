@@ -33,6 +33,8 @@ class Setting:
         self.default = setting_data.get('default')
         self.gtype = setting_data.get('gtype', [])
 
+        self._current_value = None
+
         self.search_target = setting_data.get('search_target', None)
 
         self.map = setting_data.get('map')
@@ -120,15 +122,15 @@ class Setting:
         return list(self.map.values()).index(self.default) if self.default in self.map.values() else None
 
     def _get_backend_value(self):
-        value = None
-
-        backend = self._get_backend()
-
-        if backend:
-            value = backend.get_value(self.key, self.gtype)
-        if value is None:
+        if self._current_value is None:
+            backend = self._get_backend()
             value = self.default
-        return value
+            
+            if backend:
+                value = backend.get_value(self.key, self.gtype) or self.default
+                
+            self._current_value = value
+        return self._current_value
 
     def _get_backend_range(self):
         backend = self._get_backend()
@@ -139,6 +141,7 @@ class Setting:
         backend = self._get_backend()
         if backend:
             backend.set_value(self.key, convert_by_gvariant(value, self.gtype), self.gtype)
+            self._current_value = value
 
     def _get_backend(self):
         if self.root is True:
