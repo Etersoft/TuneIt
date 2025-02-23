@@ -17,3 +17,6 @@ class ButtonWidget(BaseWidget):
 
     def _on_button_clicked(self, button):
         self.setting._set_backend_value(True)
+
+    def update_display(self):
+        pass
