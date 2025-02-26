@@ -5,6 +5,7 @@ from .EntryWidget import EntryWidget
 from .NumStepper import NumStepper
 from .FileChooser import FileChooser
 from .ButtonWidget import ButtonWidget
+from .InfoLabelWidget import InfoLabelWidget
 
 class WidgetFactory:
     widget_map = {
@@ -15,6 +16,7 @@ class WidgetFactory:
         'entry': EntryWidget,
         'number': NumStepper,
         'button': ButtonWidget,
+        'info_label': InfoLabelWidget,
     }
 
     @staticmethod

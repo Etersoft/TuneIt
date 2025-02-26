@@ -1,3 +1,5 @@
+import threading
+import time
 from ..searcher import SearcherFactory
 from .widgets import WidgetFactory
 from ..backends import backend_factory
@@ -5,12 +7,15 @@ from ..daemon_client import dclient
 from ..tools.gvariant import convert_by_gvariant
 from ..widgets.service_dialog import ServiceNotStartedDialog
 
+from gi.repository import GLib
 dialog_presented = False
 
 
 class Setting:
     def __init__(self, setting_data, module):
         self._ = module.get_translation
+
+        self.widget = None
 
         self.name = self._(setting_data['name'])
 
@@ -60,6 +65,10 @@ class Setting:
             self.gtype = self.gtype[0]
         else:
             self.gtype = self.gtype
+        
+        self.update_interval = setting_data.get('update_interval', None)
+        if self.update_interval:
+            self._start_update_thread()
 
     def _default_map(self):
         if self.type == 'boolean':
@@ -98,8 +107,8 @@ class Setting:
         if self.root is True:
             print("Root is true")
             if dclient is not None:
-                widget = WidgetFactory.create_widget(self)
-                return widget.create_row() if widget else None
+                self.widget = WidgetFactory.create_widget(self)
+                return self.widget.create_row() if self.widget else None
             else:
                 global dialog_presented
                 if dialog_presented is False:
@@ -111,8 +120,8 @@ class Setting:
                     dialog_presented = True
                 return None
 
-        widget = WidgetFactory.create_widget(self)
-        return widget.create_row() if widget else None
+        self.widget = WidgetFactory.create_widget(self)
+        return self.widget.create_row() if self.widget else None
 
     def _get_selected_row_index(self):
         current_value = self._get_backend_value()
@@ -121,8 +130,8 @@ class Setting:
     def _get_default_row_index(self):
         return list(self.map.values()).index(self.default) if self.default in self.map.values() else None
 
-    def _get_backend_value(self):
-        if self._current_value is None:
+    def _get_backend_value(self, force=False):
+        if self._current_value is None or force is True:
             backend = self._get_backend()
             value = self.default
             
@@ -154,3 +163,21 @@ class Setting:
         if not backend:
             print(f"Бекенд {self.backend} не зарегистрирован.")
         return backend
+
+    def _start_update_thread(self):
+        def update_loop():
+            while True:
+                time.sleep(self.update_interval)
+                prev_value = self._current_value
+                current_value = self._get_backend_value(force=True)
+                if current_value != prev_value:
+                    GLib.idle_add(self._update_widget)
+
+        thread = threading.Thread(target=update_loop, daemon=True)
+        thread.start()
+
+    def _update_widget(self):
+        
+        if self.widget:
+            self.widget.update_display()
+        return False
