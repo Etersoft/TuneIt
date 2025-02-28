@@ -12,6 +12,8 @@ class BooleanWidget(BaseWidget):
         )
         self.switch.connect("notify::active", self._on_boolean_toggled)
 
+        self.row.set_activatable_widget(self.switch)
+
         control_box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
         control_box.append(self.reset_revealer)
         control_box.append(self.switch)

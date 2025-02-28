@@ -46,6 +46,8 @@ class FileChooser(BaseWidget):
         )
         self.select_button.set_valign(Gtk.Align.CENTER)
 
+        row.set_activatable_widget(self.select_button)
+        
         self.select_button.connect("clicked", self._on_button_clicked)
         control_box.append(self.select_button)
 

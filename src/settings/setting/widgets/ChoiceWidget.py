@@ -11,6 +11,8 @@ class ChoiceWidget(BaseWidget):
         self.dropdown.set_halign(Gtk.Align.CENTER)
         self.dropdown.set_valign(Gtk.Align.CENTER)
 
+        self.row.set_activatable_widget(self.dropdown)
+        
         self._set_dropdown_width(items)
         self._update_dropdown_selection()
 
