@@ -6,6 +6,7 @@ from .NumStepper import NumStepper
 from .FileChooser import FileChooser
 from .ButtonWidget import ButtonWidget
 from .InfoLabelWidget import InfoLabelWidget
+from .InfoDictWidget import InfoDictWidget
 
 class WidgetFactory:
     widget_map = {
@@ -17,6 +18,7 @@ class WidgetFactory:
         'number': NumStepper,
         'button': ButtonWidget,
         'info_label': InfoLabelWidget,
+        'info_dict': InfoDictWidget,
     }
 
     @staticmethod
