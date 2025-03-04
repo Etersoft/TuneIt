@@ -112,7 +112,7 @@ class Setting:
             else:
                 global dialog_presented
                 if dialog_presented is False:
-                    from ..main import get_main_window
+                    from ...main import get_main_window
 
                     dialog = ServiceNotStartedDialog()
                     dialog.present(get_main_window())
