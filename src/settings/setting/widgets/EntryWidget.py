@@ -31,9 +31,8 @@ class EntryWidget(BaseWidget):
         return self.row
 
     def update_display(self):
-        with self.entry.handler_block_by_func(self._on_text_changed):
-            current_value = self.setting._get_backend_value()
-            self.entry.set_text(str(current_value) if current_value is not None else "")
+        current_value = self.setting._get_backend_value()
+        self.entry.set_text(str(current_value) if current_value is not None else "")
         self._update_reset_visibility()
 
     def _on_text_changed(self, entry):

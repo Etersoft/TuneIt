@@ -59,8 +59,7 @@ class ChoiceWidget(BaseWidget):
         default_value = self.setting._get_default_row_index()
 
         if default_value is not None:
-            with self.dropdown.handler_block_by_func(self._on_choice_changed):
-                self.dropdown.set_selected(default_value)
+            self.dropdown.set_selected(default_value)
             self.setting._set_backend_value(self.setting.default)
 
         self._update_reset_visibility()

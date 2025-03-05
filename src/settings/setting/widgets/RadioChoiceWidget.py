@@ -104,8 +104,7 @@ class RadioChoiceWidget(BaseWidget):
             self.setting._set_backend_value(default_value)
 
             if default_value in self.radio_buttons:
-                with self.radio_buttons[default_value].handler_block_by_func(self._on_toggle):
-                    self.radio_buttons[default_value].set_active(True)
+                self.radio_buttons[default_value].set_active(True)
             self._update_reset_visibility()
 
     def _update_reset_visibility(self):
