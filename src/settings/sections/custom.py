@@ -51,10 +51,16 @@ class CustomSection(BaseSection):
         setting = self.settings_dict[target]
         
         if action == 'set':
+            setting.create_row = value
+            setting._update_widget()
+
+        elif action == 'set_apply':
             setting.set_value(value)
+
         elif action == 'visible':
             if setting.row:
                 setting.row.set_visible(value.lower() == 'true')
+        
         elif action == 'enabled':
             if setting.row:
                 setting.row.set_sensitive(value.lower() == 'true')
