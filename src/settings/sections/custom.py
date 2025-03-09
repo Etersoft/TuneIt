@@ -6,6 +6,8 @@ from .base import BaseSection
 import logging
 
 class CustomSection(BaseSection):
+    settings = []
+
     def __init__(self, section_data, module):
         super().__init__(section_data, module)
         self.logger = logging.getLogger(f"{self.__class__.__name__}[{self.name}]")
