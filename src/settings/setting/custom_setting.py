@@ -4,6 +4,7 @@ from .widgets import WidgetFactory
 
 import logging
 import subprocess
+import ast
 
 
 class CustomSetting:
@@ -22,6 +23,7 @@ class CustomSetting:
         self._current_value = None
 
         self.get_command = setting_data.get('get_command')
+        self.get_range_command = setting_data.get('get_range_command')
         self.set_command = setting_data.get('set_command')
 
         self.gtype = setting_data.get('gtype', 's')
@@ -115,6 +117,9 @@ class CustomSetting:
             self._current_value = value
             self._update_widget()
 
+    def get_range(self):
+        return self._execute_get_range_command()
+
     def _get_selected_row_index(self):
         current_value = self._get_backend_value()
         return list(self.map.values()).index(current_value) if current_value in self.map.values() else 0
@@ -162,6 +167,25 @@ class CustomSetting:
             self.logger.error(f"Set command failed: {e.stderr}")
             return False
 
+    def _execute_get_range_command(self):
+        if not self.get_range_command:
+            return None
+
+        try:
+            cmd = self._format_command(self.get_range_command)
+            result = subprocess.run(
+                cmd,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                shell=True
+            )
+            return ast.literal_eval(self._process_output(result.stdout))
+        except subprocess.CalledProcessError as e:
+            self.logger.error(f"Get range command failed: {e.stderr}")
+            return None
+
     def _format_command(self, template, value=None):
         variables = {
             'value': value,
@@ -204,3 +228,6 @@ class CustomSetting:
 
     def _set_backend_value(self, value):
         self.set_value(value)
+    
+    def _get_backend_range(self):
+        return self.get_range()
