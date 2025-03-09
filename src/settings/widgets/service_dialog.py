@@ -1,10 +1,14 @@
 import os
 import subprocess
 import sys
+from time import sleep
 
-from gi.repository import Adw
+from gi.repository import GLib, Adw
 
 class ServiceNotStartedDialog(Adw.AlertDialog):
+    
+    response = ""
+    
     def __init__(self):
         super().__init__()
 
@@ -15,17 +19,23 @@ class ServiceNotStartedDialog(Adw.AlertDialog):
 
         self.add_response("yes", _("Yes"))
         self.add_response("no", _("No"))
+        
+        
+    def user_question(self, window):
+        
+        GLib.idle_add(self.present, window)
+        
+        def on_response(dialog, response):
+            self.response = response
 
-        self.connect("response", self.on_response)
-
-    def on_response(self, dialog, response):
-        if response == "yes":
-            self.service_enable()
-            dialog.close()
-            os.execv(sys.argv[0], sys.argv)
-
-        elif response in ("no", "close"):
-            dialog.close()
+        self.connect('response', on_response)
+        
+        while True:
+            if self.response != "":
+                return self.response
+            else:
+                sleep(0.1)
+                continue
 
     def service_status(self):
         try:
@@ -52,3 +62,8 @@ class ServiceNotStartedDialog(Adw.AlertDialog):
         except Exception as e:
             print(f"An error occurred: {e}")
 
+    def service_enable_with_restart(self):
+        self.service_enable()
+        self.close()
+
+        os.execv(sys.argv[0], sys.argv)

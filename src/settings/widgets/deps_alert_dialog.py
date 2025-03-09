@@ -1,4 +1,4 @@
-from gi.repository import GObject, Adw, Gtk
+from gi.repository import GLib, Adw, Gtk
 from time import sleep
 
 @Gtk.Template(resource_path='/ru.ximperlinux.TuneIt/settings/widgets/deps_alert_dialog.ui')
@@ -10,7 +10,7 @@ class TuneItDepsAlertDialog(Adw.AlertDialog):
     response = ""
 
     def user_question(self, window):
-        self.present(window)
+        GLib.idle_add(self.present, window)
         
         def on_response(dialog, response):
             self.response = response

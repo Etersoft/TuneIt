@@ -1,3 +1,4 @@
+import time
 import traceback
 from .module import Module
 from .page import Page
@@ -47,11 +48,17 @@ def init_settings_stack(stack, listbox, split_view):
                     f"{deps_message}\n{conflicts_message}"
                 )
                 
-                response = dialog.user_question(listbox.get_root())
-                
+                while True:
+                    w = listbox.get_root()
+                    if w.get_visible() and w.get_mapped():
+                        response = dialog.user_question(w)
+                        break
+                    time.sleep(0.1)
+
                 print(f"RESPONSE: {response}")
                 if response == "skip":
                     break
+
             modules_dict[module.name] = module
             
             for section_data in module_data.get('sections', []):

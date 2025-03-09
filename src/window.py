@@ -64,5 +64,6 @@ class TuneitWindow(Adw.ApplicationWindow):
 
     def error(self, error):
         print(error)
+
         self.error_dialog.textbuffer.set_text(str(error))
-        self.error_dialog.present(self)
+        GLib.idle_add(self.error_dialog.present, self)
