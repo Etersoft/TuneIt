@@ -11,12 +11,13 @@ class ChoiceWidget(BaseWidget):
         self.dropdown.set_halign(Gtk.Align.CENTER)
         self.dropdown.set_valign(Gtk.Align.CENTER)
 
+        self.handler_id = self.dropdown.connect("notify::selected", self._on_choice_changed)
+
         self.row.set_activatable_widget(self.dropdown)
         
         self._set_dropdown_width(items)
         self._update_dropdown_selection()
 
-        self.handler_id = self.dropdown.connect("notify::selected", self._on_choice_changed)
 
         control_box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
         control_box.append(self.reset_revealer)
