@@ -16,7 +16,7 @@ class ChoiceWidget(BaseWidget):
         self._set_dropdown_width(items)
         self._update_dropdown_selection()
 
-        self.dropdown.connect("notify::selected", self._on_choice_changed)
+        self.handler_id = self.dropdown.connect("notify::selected", self._on_choice_changed)
 
         control_box = Gtk.Box(spacing=6, orientation=Gtk.Orientation.HORIZONTAL)
         control_box.append(self.reset_revealer)
@@ -32,7 +32,9 @@ class ChoiceWidget(BaseWidget):
 
     def _update_dropdown_selection(self):
         current_index = self.setting._get_selected_row_index()
-        self.dropdown.set_selected(current_index)
+
+        with self.dropdown.handler_block(self.handler_id):
+            self.dropdown.set_selected(current_index)
 
     def _set_dropdown_width(self, items):
         layout = self.dropdown.create_pango_layout("")
@@ -59,7 +61,8 @@ class ChoiceWidget(BaseWidget):
         default_value = self.setting._get_default_row_index()
 
         if default_value is not None:
-            self.dropdown.set_selected(default_value)
+            with self.dropdown.handler_block(self.handler_id):
+                self.dropdown.set_selected(default_value)
             self.setting._set_backend_value(self.setting.default)
 
         self._update_reset_visibility()

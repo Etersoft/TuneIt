@@ -10,7 +10,7 @@ class BooleanWidget(BaseWidget):
             valign=Gtk.Align.CENTER,
             halign=Gtk.Align.CENTER,
         )
-        self.switch.connect("notify::active", self._on_boolean_toggled)
+        self.handler_id = self.switch.connect("notify::active", self._on_boolean_toggled)
 
         self.row.set_activatable_widget(self.switch)
 
@@ -25,7 +25,10 @@ class BooleanWidget(BaseWidget):
     def _update_initial_state(self):
         current_value = self.setting._get_backend_value()
         is_active = current_value == self.setting.map.get(True)
-        self.switch.set_active(is_active)
+        
+        with self.switch.handler_block(self.handler_id):
+            self.switch.set_active(is_active)
+        
         self._update_reset_visibility()
 
     def update_display(self):
@@ -41,8 +44,10 @@ class BooleanWidget(BaseWidget):
         default_value = self.setting.map.get(self.setting.default)
 
         self.setting._set_backend_value(default_value)
-        self.switch.set_active(self.setting.default)
-
+        
+        with self.switch.handler_block(self.handler_id):
+            self.switch.set_active(self.setting.default)
+        
         self._update_reset_visibility()
 
     def _update_reset_visibility(self):
