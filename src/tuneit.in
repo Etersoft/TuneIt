@@ -33,7 +33,6 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-VERSION = '@VERSION@'
 pkgdatadir = '@pkgdatadir@'
 localedir = '@localedir@'
 
@@ -43,6 +42,12 @@ locale.bindtextdomain('tuneit', localedir)
 locale.textdomain('tuneit')
 gettext.install('tuneit', localedir)
 
+import builtins
+
+from tuneit.config import Config
+builtins.tuneit_config = Config
+
+
 if __name__ == '__main__':
     import gi
 
@@ -51,4 +56,4 @@ if __name__ == '__main__':
     resource._register()
 
     from tuneit import main
-    sys.exit(main.main(VERSION))
+    sys.exit(main.main())

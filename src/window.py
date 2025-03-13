@@ -41,6 +41,11 @@ class TuneitWindow(Adw.ApplicationWindow):
         self.error_dialog = TuneItErrorDialog()
 
         self.connect('settings_page_update', self.update_settings_page)
+
+        if tuneit_config.IS_DEVEL:
+            print("!!! DEVEL BUILD")
+            self.add_css_class("devel")
+
         self.update_settings_page()
 
     def update_settings_page(self):

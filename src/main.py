@@ -61,7 +61,7 @@ class TuneitApplication(Adw.Application):
         about = Adw.AboutDialog(application_name='tuneit',
                                 application_icon='ru.ximperlinux.TuneIt',
                                 developer_name='Etersoft',
-                                version='0.1.0',
+                                version=tuneit_config.VERSION,
                                 developers=['Ximper'],
                                 copyright='© 2024 Etersoft')
         # Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
@@ -88,7 +88,7 @@ class TuneitApplication(Adw.Application):
             self.set_accels_for_action(f"app.{name}", shortcuts)
 
 
-def main(version):
+def main():
     """The application's entry point."""
     app = TuneitApplication()
     return app.run(sys.argv)

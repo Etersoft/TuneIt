@@ -7,7 +7,7 @@ def get_local_module_directory():
     return os.path.join(home_directory, ".local", "share", "tuneit", "modules")
 
 def get_module_directory():
-    return "/usr/share/tuneit/modules"
+    return os.path.join(tuneit_config.pkgdatadir, "modules")
 
 def load_modules():
     modules = []

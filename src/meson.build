@@ -31,6 +31,8 @@ conf.set('VERSION', meson.project_version())
 conf.set('localedir', get_option('prefix') / get_option('localedir'))
 conf.set('pkgdatadir', pkgdatadir)
 
+conf.set('IS_DEVEL', get_option('is_devel'))
+
 configure_file(
   input: 'tuneit.in',
   output: 'tuneit',
@@ -47,6 +49,15 @@ configure_file(
   install: true,
   install_dir: get_option('sbindir'),
   install_mode: 'r-xr-xr-x'
+)
+
+configure_file(
+  input: 'config.py',
+  output: 'config.py',
+  configuration: conf,
+  install: true,
+  install_dir: moduledir
+
 )
 
 tuneit_sources = [
