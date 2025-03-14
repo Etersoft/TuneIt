@@ -1,4 +1,5 @@
 import os
+import fnmatch
 
 from .backends import FileBackend
 
@@ -82,13 +83,13 @@ class FileSearcher(Searcher):
                     result.extend([
                         os.path.join(root, f)
                         for f in files
-                        if f.endswith(self.pattern)
+                        if fnmatch.fnmatch(f, self.pattern)
                            and not self.is_excluded(os.path.join(root, f))
                     ])
             else:
-                if os.path.isfile(base_path) and base_path.endswith(self.pattern):
-
-                    if not self.is_excluded(base_path):
+                if os.path.isfile(base_path):
+                    filename = os.path.basename(base_path)
+                    if fnmatch.fnmatch(filename, self.pattern) and not self.is_excluded(base_path):
                         result.append(base_path)
                 else:
                     try:
@@ -96,7 +97,7 @@ class FileSearcher(Searcher):
                             os.path.join(base_path, f)
                             for f in os.listdir(base_path)
                             if os.path.isfile(os.path.join(base_path, f))
-                               and f.endswith(self.pattern)
+                               and fnmatch.fnmatch(f, self.pattern)
                                and not self.is_excluded(os.path.join(base_path, f))
                         ])
                     except PermissionError:
