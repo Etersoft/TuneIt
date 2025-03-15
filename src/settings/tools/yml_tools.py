@@ -16,11 +16,12 @@ def load_modules():
 
     all_modules = set(os.listdir(global_modules_directory))
 
-    for module_name in os.listdir(local_modules_directory):
-        module_path = os.path.join(local_modules_directory, module_name)
-        if os.path.isdir(module_path):
-            modules += load_yaml_files_from_directory(module_path)
-            all_modules.discard(module_name)
+    if os.path.exists(local_modules_directory) and os.path.isdir(local_modules_directory):
+        for module_name in os.listdir(local_modules_directory):
+            module_path = os.path.join(local_modules_directory, module_name)
+            if os.path.isdir(module_path):
+                modules += load_yaml_files_from_directory(module_path)
+                all_modules.discard(module_name)
 
     for module_name in all_modules:
         module_path = os.path.join(global_modules_directory, module_name)
