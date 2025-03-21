@@ -1,4 +1,4 @@
-from gi.repository import Adw
+from gi.repository import GLib, Adw
 
 from .widgets.panel_row import TuneItPanelRow
 
@@ -29,14 +29,17 @@ class Page:
                 print(f"Секция {section.name} не создала виджетов.")
 
         if not_empty:
-            stack_page = stack.add_child(pref_page)
-            stack_page.set_title(self.name)
-            stack_page.set_name(self.name)
-
-            row = TuneItPanelRow()
-            row.props.name = self.name
-            row.props.title = self.name
-            row.props.icon_name = self.icon
-            listbox.append(row)
+            GLib.idle_add(self.update_ui, stack, listbox, pref_page)
         else:
             print(f"the page {self.name} is empty, ignored")
+
+    def update_ui(self, stack, listbox, pref_page):
+        stack_page = stack.add_child(pref_page)
+        stack_page.set_title(self.name)
+        stack_page.set_name(self.name)
+
+        row = TuneItPanelRow()
+        row.props.name = self.name
+        row.props.title = self.name
+        row.props.icon_name = self.icon
+        listbox.append(row)
