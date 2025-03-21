@@ -232,6 +232,6 @@ class CustomSetting:
 
     def _set_backend_value(self, value):
         self.set_value(value)
-    
+
     def _get_backend_range(self):
         return self.get_range()
