@@ -131,21 +131,50 @@ class CustomSetting:
     def _get_default_row_index(self):
         return list(self.map.values()).index(self.default) if self.default in self.map.values() else None
 
+    def _execute_command(self, cmd, capture_output=True):
+        with subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            shell=True,
+            bufsize=1
+        ) as p:
+            output = []
+
+            def process_line(line):
+                line = line.strip()
+                if not line:
+                    return
+                if line.startswith('CALLBACK:'):
+                    self._handle_callback(line)
+                elif line.startswith('NOTIFY:'):
+                    self._handle_notify(line)
+                elif capture_output:
+                    output.append(line)
+
+            while p.poll() is None:
+                line = p.stdout.readline()
+                process_line(line)
+
+            for line in p.stdout.read().splitlines():
+                process_line(line)
+
+            stderr = p.stderr.read().strip()
+
+        if p.returncode != 0:
+            raise subprocess.CalledProcessError(p.returncode, cmd, stderr=stderr)
+
+        return '\n'.join(output) if capture_output else ''
+
     def _execute_get_command(self):
         if not self.get_command:
             return self.default
 
         try:
             cmd = self._format_command(self.get_command)
-            result = subprocess.run(
-                cmd,
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                shell=True
-            )
-            return self._process_output(result.stdout)
+            output = self._execute_command(cmd)
+            return output
         except subprocess.CalledProcessError as e:
             self.logger.error(f"Get command failed: {e.stderr}")
             return self.default
@@ -156,16 +185,7 @@ class CustomSetting:
 
         try:
             cmd = self._format_command(self.set_command, value)
-            result = subprocess.run(
-                cmd,
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                shell=True
-            )
-
-            self._process_output(result.stdout)
+            self._execute_command(cmd, capture_output=False)
             return True
         except subprocess.CalledProcessError as e:
             self.logger.error(f"Set command failed: {e.stderr}")
@@ -177,15 +197,8 @@ class CustomSetting:
 
         try:
             cmd = self._format_command(self.get_range_command)
-            result = subprocess.run(
-                cmd,
-                check=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                shell=True
-            )
-            return ast.literal_eval(self._process_output(result.stdout))
+            output = self._execute_command(cmd)
+            return ast.literal_eval(output)
         except subprocess.CalledProcessError as e:
             self.logger.error(f"Get range command failed: {e.stderr}")
             return None
@@ -198,16 +211,6 @@ class CustomSetting:
         }
         return template.format(**variables)
 
-    def _process_output(self, output):
-        lines = []
-        for line in output.split('\n'):
-            line = line.strip()
-            if line.startswith('CALLBACK:'):
-                self._handle_callback(line)
-            else:
-                lines.append(line)
-        return '\n'.join(lines).strip()
-
     def _handle_callback(self, line):
         try:
             _, action, target, value = line.split(':', 3)
@@ -218,6 +221,23 @@ class CustomSetting:
             )
         except ValueError:
             self.logger.error(f"Invalid callback format: {line}")
+
+    def _handle_notify(self, line):
+        self.logger.debug("handled notify")
+        try:
+            parts = line.split(':', 2)
+            parts += [None] * (3 - len(parts))
+            _, notification, seconds = parts
+
+            from ...main import get_main_window
+            get_main_window().setting_notify(
+                self.module.name,
+                self._(notification),
+                int(seconds) if seconds else None
+            )
+
+        except ValueError:
+            self.logger.error(f"Invalid notify format: {line}")
 
     def _update_widget(self):
         if self.widget:

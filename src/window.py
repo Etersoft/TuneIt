@@ -28,6 +28,9 @@ from .settings.widgets.error_dialog import TuneItErrorDialog
 class TuneitWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'TuneitWindow'
 
+
+    settings_toast_overlay = Gtk.Template.Child()
+
     settings_pagestack = Gtk.Template.Child()
     settings_listbox = Gtk.Template.Child()
     settings_split_view = Gtk.Template.Child()
@@ -58,12 +61,15 @@ class TuneitWindow(Adw.ApplicationWindow):
         Можно вызвать вот так, благодаря сигналу:
         self.settings_pagestack.get_root().emit("settings_page_update")
         """
+        self.setting_notify("Tune It", "Init settings...")
         try:
             init_settings_stack(
                 self.settings_pagestack,
                 self.settings_listbox,
                 self.settings_split_view,
             )
+            self.setting_notify("Tune It", "Settings are initialized!")
+
         except Exception as e:
             self.error(traceback.format_exc())
 
@@ -72,3 +78,14 @@ class TuneitWindow(Adw.ApplicationWindow):
 
         self.error_dialog.textbuffer.set_text(str(error))
         GLib.idle_add(self.error_dialog.present, self)
+
+    def setting_notify(self, module_name: str, notify: str, seconds: int = 5) -> None:
+        seconds = 5 if seconds is None else seconds
+
+        GLib.idle_add(self.settings_toast_overlay.dismiss_all)
+
+        toast = Adw.Toast(
+            title=f"{module_name}: {notify}",
+            timeout=seconds,
+        )
+        GLib.idle_add(self.settings_toast_overlay.add_toast, toast)
