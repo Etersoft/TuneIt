@@ -24,7 +24,7 @@ def init_settings_stack(stack, listbox, split_view):
             stack.remove(page)
     else:
         print("First init...")
-    
+
     for module_data in yaml_data:
         module = Module(module_data)
 
@@ -47,7 +47,7 @@ def init_settings_stack(stack, listbox, split_view):
                 dialog.deps_message_textbuffer.set_text(
                     f"{deps_message}\n{conflicts_message}"
                 )
-                
+
                 while True:
                     w = listbox.get_root()
                     if w.get_visible() and w.get_mapped():
@@ -60,7 +60,7 @@ def init_settings_stack(stack, listbox, split_view):
                     break
 
             modules_dict[module.name] = module
-            
+
             for section_data in module_data.get('sections', []):
                 page_name = module.get_translation(section_data.get('page', 'Default'))
                 module_page_name = section_data.get('page', 'Default')
@@ -84,7 +84,7 @@ def init_settings_stack(stack, listbox, split_view):
         except Exception as e:
             from ..main import get_error
             error = get_error()
-            
+
             full_traceback = traceback.format_exc()
             e = f"Module '{module.name}' loading error \nError: {e}\nFull traceback:\n{full_traceback}"
 
