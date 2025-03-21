@@ -34,9 +34,7 @@ class Page:
             print(f"the page {self.name} is empty, ignored")
 
     def update_ui(self, stack, listbox, pref_page):
-        stack_page = stack.add_child(pref_page)
-        stack_page.set_title(self.name)
-        stack_page.set_name(self.name)
+        stack.add_titled(pref_page, self.name, self.name)
 
         row = TuneItPanelRow()
         row.props.name = self.name
