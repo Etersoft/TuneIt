@@ -1,3 +1,5 @@
+from gi.repository import GLib
+
 import time
 import traceback
 from .module import Module
@@ -19,9 +21,9 @@ def init_settings_stack(stack, listbox, split_view):
 
     if stack.get_pages():
         print("Clear pages...")
-        listbox.remove_all()
+        GLib.idle_add(listbox.remove_all)
         for page in stack.get_pages():
-            stack.remove(page)
+            GLib.idle_add(stack.remove, page)
     else:
         print("First init...")
 
