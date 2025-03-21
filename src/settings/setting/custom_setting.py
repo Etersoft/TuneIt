@@ -19,7 +19,11 @@ class CustomSetting:
 
         self.type = setting_data['type']
         self.default = setting_data.get('default', '')
-        self.help = self._(setting_data.get('help', ''))
+
+        self.help = setting_data.get('help', None)
+        if self.help is not None:
+            self.help = self._(self.help)
+
         self._current_value = None
 
         self.get_command = setting_data.get('get_command')
