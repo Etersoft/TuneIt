@@ -52,9 +52,7 @@ class TuneitWindow(Adw.ApplicationWindow):
         self.update_settings_page()
 
     def update_settings_page(self):
-        thread = threading.Thread(target=self._update_settings_page)
-        thread.daemon = True
-        thread.start()
+        self._update_settings_page()
 
     def _update_settings_page(self, *args):
         """
@@ -77,15 +75,15 @@ class TuneitWindow(Adw.ApplicationWindow):
         print(error)
 
         self.error_dialog.textbuffer.set_text(str(error))
-        GLib.idle_add(self.error_dialog.present, self)
+        self.error_dialog.present(self)
 
     def setting_notify(self, module_name: str, notify: str, seconds: int = 5) -> None:
         seconds = 5 if seconds is None else seconds
 
-        GLib.idle_add(self.settings_toast_overlay.dismiss_all)
+        self.settings_toast_overlay.dismiss_all()
 
         toast = Adw.Toast(
             title=f"{module_name}: {notify}",
             timeout=seconds,
         )
-        GLib.idle_add(self.settings_toast_overlay.add_toast, toast)
+        self.settings_toast_overlay.add_toast(toast)

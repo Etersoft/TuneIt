@@ -21,9 +21,8 @@ def init_settings_stack(stack, listbox, split_view):
 
     if stack.get_pages():
         print("Clear pages...")
-        GLib.idle_add(listbox.remove_all)
-        for page in stack.get_pages():
-            GLib.idle_add(stack.remove, page)
+        listbox.remove_all()
+        for page in stack.get_pages(): stack.remove(page)
     else:
         print("First init...")
 

@@ -43,7 +43,7 @@ class Setting:
         self.search_target = setting_data.get('search_target', None)
 
         self.map = setting_data.get('map')
-        
+
         if self.map is None:
             if self.search_target is not None:
                 self.map = SearcherFactory.create(self.search_target).search()
@@ -66,7 +66,7 @@ class Setting:
             self.gtype = self.gtype[0]
         else:
             self.gtype = self.gtype
-        
+
         self.update_interval = setting_data.get('update_interval', None)
         if self.update_interval:
             self._start_update_thread()
@@ -113,10 +113,10 @@ class Setting:
 
             else:
                 global service_stopped
-                
+
                 if service_stopped is False:
                     from ...main import get_main_window
-                    
+
                     while True:
                         w = get_main_window()
                         if w.get_visible() and w.get_mapped():
@@ -148,10 +148,10 @@ class Setting:
         if self._current_value is None or force is True:
             backend = self._get_backend()
             value = self.default
-            
+
             if backend:
                 value = backend.get_value(self.key, self.gtype) or self.default
-                
+
             self._current_value = value
         return self._current_value
 
@@ -163,7 +163,7 @@ class Setting:
     def _set_backend_value(self, value):
         backend = self._get_backend()
         if backend:
-            backend.set_value(self.key, convert_by_gvariant(value, self.gtype), self.gtype)
+            backend.set_value(self.key, value, self.gtype)
             self._current_value = value
 
     def _get_backend(self):
@@ -191,7 +191,6 @@ class Setting:
         thread.start()
 
     def _update_widget(self):
-        
         if self.widget:
             self.widget.update_display()
         return False

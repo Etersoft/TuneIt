@@ -29,7 +29,7 @@ class Page:
                 print(f"Секция {section.name} не создала виджетов.")
 
         if not_empty:
-            GLib.idle_add(self.update_ui, stack, listbox, pref_page)
+            self.update_ui(stack, listbox, pref_page)
         else:
             print(f"the page {self.name} is empty, ignored")
 
