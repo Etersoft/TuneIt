@@ -6,12 +6,9 @@ class ButtonWidget(BaseWidget):
     def create_row(self):
         self.row = Adw.ButtonRow(
             title=self.setting.name,
-            subtitle=self.setting.help,
         )
-        
-        self.row.connect("activated", self._on_button_clicked)
 
-        self.row.add_suffix(self.button)
+        self.row.connect("activated", self._on_button_clicked)
 
         return self.row
 
