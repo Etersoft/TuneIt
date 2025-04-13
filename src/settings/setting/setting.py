@@ -116,23 +116,12 @@ class Setting:
 
                 if service_stopped is False:
                     from ...main import get_main_window
+                    dialog = ServiceNotStartedDialog()
 
-                    while True:
-                        w = get_main_window()
-                        if w.get_visible() and w.get_mapped():
-                            dialog = ServiceNotStartedDialog()
-                            response = dialog.user_question(get_main_window())
-                            break
+                    dialog.present(get_main_window())
 
-                        time.sleep(0.1)
-
-                    if response == "yes":
-                        dialog.service_enable_with_restart()
-
-                    elif response in ("no", "close"):
-                        dialog.close()
-                        service_stopped = True
-                        return None
+                    service_stopped = True
+                    return None
 
         self.widget = WidgetFactory.create_widget(self)
         return self.widget.create_row() if self.widget else None

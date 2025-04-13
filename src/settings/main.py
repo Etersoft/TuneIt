@@ -1,6 +1,5 @@
 from gi.repository import GLib
 
-import time
 import traceback
 from .module import Module
 from .page import Page
@@ -26,8 +25,19 @@ def init_settings_stack(stack, listbox, split_view):
     else:
         print("First init...")
 
-    for module_data in yaml_data:
-        module = Module(module_data)
+    current_module_index = 0
+    modules = list(yaml_data)
+    window = listbox.get_root()
+
+    def process_next_module():
+        nonlocal current_module_index
+
+        if current_module_index >= len(modules):
+            finalize_processing()
+            return
+
+        module_data = modules[current_module_index]
+        current_module_index += 1
 
         try:
             deps_results = dep_manager.verify_deps(module_data.get('deps', {}))
@@ -40,77 +50,68 @@ def init_settings_stack(stack, listbox, split_view):
             all_conflicts_ok = all(r['success'] for r in conflicts_results)
 
             if all_deps_ok and all_conflicts_ok:
-                print("Deps: OK")
+                process_module(module_data)
+                GLib.idle_add(process_next_module)
             else:
-                dialog = TuneItDepsAlertDialog()
-                dialog.set_body(module_data['name'])
-
-                dialog.deps_message_textbuffer.set_text(
-                    f"{deps_message}\n{conflicts_message}"
-                )
-
-                while True:
-                    w = listbox.get_root()
-                    if w.get_visible() and w.get_mapped():
-                        response = dialog.user_question(w)
-                        break
-                    time.sleep(0.1)
-
-                print(f"RESPONSE: {response}")
-                if response == "skip":
-                    break
-
-            modules_dict[module.name] = module
-
-            for section_data in module_data.get('sections', []):
-                page_name = module.get_translation(section_data.get('page', 'Default'))
-                module_page_name = section_data.get('page', 'Default')
-                print(module_page_name)
-
-                if page_name not in pages_dict:
-
-                    page_info = (
-                        module.pages.get(f"_{module_page_name}", {})
-                        or module.pages.get(module_page_name, {})
-                    )
-
-                    page = Page(
-                        name=page_name,
-                        icon=page_info.get('icon'),
-                    )
-                    pages_dict[page_name] = page
-
-                section = section_factory.create_section(section_data, module)
-                pages_dict[page_name].add_section(section)
+                show_dialog(module_data, deps_message, conflicts_message)
         except Exception as e:
-            from ..main import get_error
-            error = get_error()
+            handle_error(e, module_data)
+            GLib.idle_add(process_next_module)
 
-            full_traceback = traceback.format_exc()
-            e = f"Module '{module.name}' loading error \nError: {e}\nFull traceback:\n{full_traceback}"
+    def show_dialog(module_data, deps_msg, conflicts_msg):
+        dialog = TuneItDepsAlertDialog()
+        dialog.set_body(module_data['name'])
+        dialog.deps_message_textbuffer.set_text(f"{deps_msg}\n{conflicts_msg}")
 
-            error(e)
+        def handle_response(response):
+            if response == "skip":
+                GLib.idle_add(process_next_module)
+            else:
+                process_module(module_data)
+                GLib.idle_add(process_next_module)
 
-    pages = list(pages_dict.values())
-    for page in pages:
-        page.sort_sections()
+        dialog.ask_user(window, handle_response)
 
-    pages = sorted(pages, key=lambda p: p.name)
+    def process_module(module_data):
+        module = Module(module_data)
+        modules_dict[module.name] = module
 
-    for page in pages:
-        page.create_stack_page(stack, listbox)
+        for section_data in module_data.get('sections', []):
+            page_name = module.get_translation(section_data.get('page', 'Default'))
+            module_page_name = section_data.get('page', 'Default')
 
-    if not stack:
-        print("Ошибка: settings_pagestack не найден.")
+            if page_name not in pages_dict:
+                page_info = module.pages.get(f"_{module_page_name}", {}) or module.pages.get(module_page_name, {})
+                page = Page(name=page_name, icon=page_info.get('icon'))
+                pages_dict[page_name] = page
 
-    def on_row_selected(listbox, row):
-        if row:
-            page_id = row.props.name
-            print(f"Selected page: {page_id}")
+            section = section_factory.create_section(section_data, module)
+            pages_dict[page_name].add_section(section)
 
-            visible_child = stack.get_child_by_name(page_id)
-            if visible_child:
-                stack.set_visible_child(visible_child)
-                split_view.set_show_content(True)
+    def finalize_processing():
+        pages = sorted(pages_dict.values(), key=lambda p: p.name)
+        for page in pages:
+            page.sort_sections()
+            page.create_stack_page(stack, listbox)
 
-    listbox.connect("row-selected", on_row_selected)
+        if not stack:
+            print("Ошибка: settings_pagestack не найден.")
+
+        def on_row_selected(listbox, row):
+            if row:
+                page_id = row.props.name
+                visible_child = stack.get_child_by_name(page_id)
+                if visible_child:
+                    stack.set_visible_child(visible_child)
+                    split_view.set_show_content(True)
+
+        listbox.connect("row-selected", on_row_selected)
+
+    def handle_error(e, module_data):
+        from ..main import get_error
+        error = get_error()
+        full_traceback = traceback.format_exc()
+        error_msg = f"Module '{module_data['name']}' loading error\nError: {e}\nFull traceback:\n{full_traceback}"
+        error(error_msg)
+
+    GLib.idle_add(process_next_module)

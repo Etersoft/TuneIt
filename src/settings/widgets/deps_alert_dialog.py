@@ -1,25 +1,19 @@
 from gi.repository import GLib, Adw, Gtk
-from time import sleep
 
 @Gtk.Template(resource_path='/ru.ximperlinux.TuneIt/settings/widgets/deps_alert_dialog.ui')
 class TuneItDepsAlertDialog(Adw.AlertDialog):
-
     __gtype_name__ = "TuneItDepsAlertDialog"
     deps_message_textbuffer = Gtk.Template.Child()
 
-    response = ""
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.callback = None
 
-    def user_question(self, window):
-        GLib.idle_add(self.present, window)
-        
-        def on_response(dialog, response):
-            self.response = response
+    def ask_user(self, window, callback):
+        self.callback = callback
+        self.present(window)
+        self.connect('response', self.on_response)
 
-        self.connect('response', on_response)
-        
-        while True:
-            if self.response != "":
-                return self.response
-            else:
-                sleep(0.1)
-                continue
+    def on_response(self, dialog, response):
+        if self.callback:
+            self.callback(response)

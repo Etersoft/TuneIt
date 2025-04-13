@@ -6,9 +6,9 @@ from time import sleep
 from gi.repository import GLib, Adw
 
 class ServiceNotStartedDialog(Adw.AlertDialog):
-    
+
     response = ""
-    
+
     def __init__(self):
         super().__init__()
 
@@ -19,23 +19,15 @@ class ServiceNotStartedDialog(Adw.AlertDialog):
 
         self.add_response("yes", _("Yes"))
         self.add_response("no", _("No"))
-        
-        
-    def user_question(self, window):
-        
-        GLib.idle_add(self.present, window)
-        
-        def on_response(dialog, response):
-            self.response = response
 
         self.connect('response', on_response)
-        
-        while True:
-            if self.response != "":
-                return self.response
-            else:
-                sleep(0.1)
-                continue
+
+    def on_response(self, dialog, response):
+        if response == "yes":
+            self.service_enable_with_restart()
+
+        elif response in ("no", "close"):
+            dialog.close()
 
     def service_status(self):
         try:
