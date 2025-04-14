@@ -20,7 +20,7 @@ class ServiceNotStartedDialog(Adw.AlertDialog):
         self.add_response("yes", _("Yes"))
         self.add_response("no", _("No"))
 
-        self.connect('response', on_response)
+        self.connect('response', self.on_response)
 
     def on_response(self, dialog, response):
         if response == "yes":

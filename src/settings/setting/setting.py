@@ -53,6 +53,7 @@ class Setting:
         if isinstance(self.map, list) and 'choice' in self.type:
             self.map = {
                 item.title(): item for item in self.map
+                if item is not None
             }
 
 
