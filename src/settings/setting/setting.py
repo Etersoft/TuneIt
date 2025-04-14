@@ -1,3 +1,4 @@
+import logging
 import threading
 import time
 from ..searcher import SearcherFactory
@@ -15,9 +16,11 @@ class Setting:
     def __init__(self, setting_data, module):
         self._ = module.get_translation
 
-        self.widget = None
-
         self.name = self._(setting_data['name'])
+
+        self.logger = logging.getLogger(f"{self.__class__.__name__}[{self.name}]")
+
+        self.widget = None
 
         self.root = setting_data.get('root', False)
 
@@ -56,12 +59,18 @@ class Setting:
                 if item is not None
             }
 
+            if not self.map:
+                self.logger.warning(f"Warning: 'map' is empty for setting {self.name}. Check data source.")
+
 
         if isinstance(self.map, dict) and 'choice' in self.type:
             self.map = {
                 self._(key) if isinstance(key, str) else key: value
                 for key, value in self.map.items()
             }
+            if not self.map:
+                self.logger.warning(f"Warning: 'map' is empty for setting {self.name}. Check data source.")
+
 
         if len(self.gtype) > 2:
             self.gtype = self.gtype[0]
@@ -85,7 +94,7 @@ class Setting:
                 return {}
 
             for var in range:
-                print(var)
+                self.logger.debug(var)
                 map[var[0].upper() + var[1:]] = var
             return map
         if self.type == 'number':
@@ -107,7 +116,7 @@ class Setting:
 
     def create_row(self):
         if self.root is True:
-            print("Root is true")
+            self.logger.info("Root is true")
             if dclient is not None:
                 self.widget = WidgetFactory.create_widget(self)
                 return self.widget.create_row() if self.widget else None
@@ -165,7 +174,7 @@ class Setting:
             backend = backend_factory.get_backend(self.backend, self.params)
 
         if not backend:
-            print(f"Бекенд {self.backend} не зарегистрирован.")
+            self.logger.error(f"Бекенд {self.backend} не зарегистрирован.")
         return backend
 
     def _start_update_thread(self):
