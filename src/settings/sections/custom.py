@@ -15,7 +15,7 @@ class CustomSection(BaseSection):
         self.settings_dict = {s.orig_name: s for s in self.settings}
         self.module = module
         self.module.add_section(self)
-        
+
         self._callback_buffer = []
 
     def create_preferences_group(self):
@@ -26,14 +26,14 @@ class CustomSection(BaseSection):
             try:
                 row = setting.create_row()
                 if row:
-                    print(f"Adding a row for setting: {setting.name}")
+                    self.logger.debug(f"Adding a row for setting: {setting.name}")
                     group.add(row)
                     not_empty = True
             except Exception as e:
                 self.logger.error(f"Error creating row for {setting.orig_name}: {str(e)}")
-        
+
         self._process_buffered_callbacks()
-        
+
         return group if not_empty else None
 
     def handle_callback(self, action, target, value):
@@ -45,13 +45,13 @@ class CustomSection(BaseSection):
                 return
 
             self._apply_callback(action, target, value)
-                
+
         except Exception as e:
             self.logger.error(f"Callback handling error: {str(e)}")
 
     def _apply_callback(self, action, target, value):
         setting = self.settings_dict[target]
-        
+
         if action == 'set':
             setting.create_row = value
             setting._update_widget()
@@ -62,7 +62,7 @@ class CustomSection(BaseSection):
         elif action == 'visible':
             if setting.row:
                 setting.row.set_visible(value.lower() == 'true')
-        
+
         elif action == 'enabled':
             if setting.row:
                 setting.row.set_sensitive(value.lower() == 'true')

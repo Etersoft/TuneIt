@@ -1,3 +1,8 @@
+import logging
+
+
+logger = logging.getLogger(f"{__name__}")
+
 def convert_by_gvariant(value, gtype):
     """
     Приводит значение к нужному типу в зависимости от GVariant gtype.
@@ -30,5 +35,5 @@ def convert_by_gvariant(value, gtype):
         else:
             raise ValueError(f"Неизвестный GVariant тип: {gtype}")
     except (ValueError, TypeError) as e:
-        print(f"Ошибка приведения типа: {e}")
+        logger.error(f"Ошибка приведения типа: {e}")
         return None

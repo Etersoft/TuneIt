@@ -26,11 +26,11 @@ class BinaryBackend(Backend):
 
             return result.stdout.strip()
         except subprocess.CalledProcessError as e:
-            print(f"[ERROR] Ошибка при выполнении команды {command}: {e}")
+            self.logger.error(f"Ошибка при выполнении команды {command}: {e}")
             return None
 
     def get_value(self, key, gtype):
-        print(f"[DEBUG] Получение значения: key={key}, gtype={gtype}")
+        self.logger.debug(f"Получение значения: key={key}, gtype={gtype}")
 
         result = self._run_binary('get_value', key)
 
@@ -38,28 +38,28 @@ class BinaryBackend(Backend):
             try:
                 return ast.literal_eval(result)
             except (ValueError, SyntaxError) as e:
-                print(f"[ERROR] Ошибка при преобразовании результата {result}: {e}")
+                self.logger.error(f"Ошибка при преобразовании результата {result}: {e}")
                 return result
         return None
 
     def get_range(self, key, gtype):
-        print(f"[DEBUG] Получение диапазона: key={key}, gtype={gtype}")
+        self.logger.debug(f"Получение диапазона: key={key}, gtype={gtype}")
 
         result = self._run_binary('get_range', key)
 
         if not result:
-            print(f"[ERROR] Пустой результат или ошибка при выполнении команды get_range для ключа {key}")
+            self.logger.error(f"Пустой результат или ошибка при выполнении команды get_range для ключа {key}")
             return None
 
         try:
             parsed_result = ast.literal_eval(result)
             return parsed_result
         except (ValueError, SyntaxError) as e:
-            print(f"[ERROR] Ошибка при преобразовании результата {result} для ключа {key}: {e}")
+            self.logger.error(f"Ошибка при преобразовании результата {result} для ключа {key}: {e}")
             return None
 
     def set_value(self, key, value, gtype):
-        print(f"[DEBUG] Установка значения: key={key}, value={value}, gtype={gtype}")
+        self.logger.debug(f"Установка значения: key={key}, value={value}, gtype={gtype}")
 
         result = self._run_binary('set_value', key, str(value))
 
@@ -67,5 +67,5 @@ class BinaryBackend(Backend):
             try:
                 return ast.literal_eval(result)
             except (ValueError, SyntaxError) as e:
-                print(f"[ERROR] Ошибка при преобразовании результата {result}: {e}")
+                self.logger.error(f"Ошибка при преобразовании результата {result}: {e}")
         return None

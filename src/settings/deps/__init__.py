@@ -1,3 +1,4 @@
+import logging
 from .os import OSReleaseChecker
 from .path import PathChecker
 from .binary import BinaryChecker
@@ -9,7 +10,7 @@ class DependencyCheckerFactory:
             'path': PathChecker,
             'binary': BinaryChecker,
         }
-        
+
     def create_checker(self, dependency_type):
         checker_class = self._checkers.get(dependency_type)
         if not checker_class:
@@ -19,7 +20,9 @@ class DependencyCheckerFactory:
 class DependencyManager:
     def __init__(self):
         self.factory = DependencyCheckerFactory()
-    
+        self.logger = logging.getLogger(f"{self.__class__.__name__}")
+
+
     def _verify(self, items, check_type):
         results = []
         for item_type, expected_value in items.items():
@@ -35,7 +38,7 @@ class DependencyManager:
                     'error': result.get('error', '')
                 })
             except Exception as e:
-                print(f"Error when checking {item_type}: {str(e)}")
+                self.logger.error(f"Error when checking {item_type}: {str(e)}")
                 results.append({
                     'type': check_type,
                     'name': item_type,

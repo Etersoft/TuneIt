@@ -12,7 +12,7 @@ class CustomSetting:
         self._ = module.get_translation
         self.module = module
         self.section = section
-        self.logger = logging.getLogger(f"CommandSetting[{setting_data['name']}]")
+        self.logger = logging.getLogger(f"CustomSetting[{setting_data['name']}]")
 
         self.name = self._(setting_data['name'])
         self.orig_name = setting_data['name']
@@ -80,7 +80,7 @@ class CustomSetting:
                 return {}
 
             for var in range:
-                print(var)
+                self.logger.debug(var)
                 map[var[0].upper() + var[1:]] = var
             return map
         if self.type == 'number':

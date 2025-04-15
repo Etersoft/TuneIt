@@ -8,6 +8,9 @@ from .ButtonWidget import ButtonWidget
 from .InfoLabelWidget import InfoLabelWidget
 from .InfoDictWidget import InfoDictWidget
 
+import logging
+logger = logging.getLogger(f"{__name__}")
+
 class WidgetFactory:
     widget_map = {
         'file': FileChooser,
@@ -27,5 +30,5 @@ class WidgetFactory:
         if widget_class:
             return widget_class(setting)
         else:
-            print(f"Неизвестный тип виджета: {setting.type}")
+            logger.error(f"Неизвестный тип виджета: {setting.type}")
             return None

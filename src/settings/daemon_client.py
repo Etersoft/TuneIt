@@ -1,3 +1,4 @@
+import logging
 import dbus
 import ast
 
@@ -11,12 +12,14 @@ class DaemonClient:
         :param object_path: Путь объекта в D-Bus.
         :return: Экземпляр DaemonClient или None, если сервис недоступен.
         """
+        logger = logging.getLogger(f"DaemonClient")
+
         try:
             bus = dbus.SystemBus()
             bus.get_object(bus_name, object_path)  # Проверка доступности объекта
             return super(DaemonClient, cls).__new__(cls)
         except dbus.DBusException:
-            print(f"Service '{bus_name}' is not running.")
+            logger.debug(f"Service '{bus_name}' is not running.")
             return None
 
     def __init__(self, bus_name="ru.ximperlinux.TuneIt.Daemon", object_path="/Daemon"):
@@ -26,6 +29,8 @@ class DaemonClient:
         :param bus_name: Имя D-Bus сервиса.
         :param object_path: Путь объекта в D-Bus.
         """
+        self.logger = logging.getLogger(f"{self.__class__.__name__}")
+
         self.bus_name = bus_name
         self.object_path = object_path
         self.bus = dbus.SystemBus()
@@ -33,7 +38,7 @@ class DaemonClient:
         self.interface = dbus.Interface(
             self.proxy, dbus_interface="ru.ximperlinux.TuneIt.DaemonInterface"
         )
-        print("dbus client connected")
+        self.logger.debug("dbus client connected")
 
         self.backend_name = None
         self.backend_params = None
@@ -65,7 +70,7 @@ class DaemonClient:
         try:
             return ast.literal_eval(str(self.interface.GetValue(self.backend_name, str(self.backend_params), key, gtype)))
         except dbus.DBusException as e:
-            print(f"Error in GetValue: {e}")
+            self.logger.error(f"Error in GetValue: {e}")
             return None
 
     def set_value(self, key, value, gtype):
@@ -80,7 +85,7 @@ class DaemonClient:
         try:
             self.interface.SetValue(self.backend_name, str(self.backend_params), key, str(value), gtype)
         except dbus.DBusException as e:
-            print(f"Error in SetValue: {e}")
+            self.logger.error(f"Error in SetValue: {e}")
 
     def get_range(self, key, gtype):
         """
@@ -93,7 +98,7 @@ class DaemonClient:
         try:
             return ast.literal_eval(str(self.interface.GetRange(self.backend_name, str(self.backend_params), key, gtype)))
         except dbus.DBusException as e:
-            print(f"Error in GetRange: {e}")
+            self.logger.error(f"Error in GetRange: {e}")
             return None
 
 dclient = DaemonClient()

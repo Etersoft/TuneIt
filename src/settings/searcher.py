@@ -1,3 +1,4 @@
+import logging
 import os
 import fnmatch
 
@@ -110,6 +111,8 @@ class ValueInFileSearcher(Searcher):
                  file_pattern, key, exclude_neighbor_files=None):
         super().__init__(search_paths, exclude_paths, exclude_names, recursive)
 
+        self.logger = logging.getLogger(f"{self.__class__.__name__}")
+
         self.file_pattern = file_pattern
         self.key = key
         self.exclude_neighbor_files = exclude_neighbor_files or []
@@ -141,7 +144,7 @@ class ValueInFileSearcher(Searcher):
                 result.append(FileBackend(params={'file_path': file_path}).get_value(self.key, 's'))
 
             except Exception as e:
-                print(f"Error processing {file_path}: {str(e)}")
+                self.logger.error(f"Error processing {file_path}: {str(e)}")
                 continue
 
         return result

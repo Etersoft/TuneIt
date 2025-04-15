@@ -47,7 +47,7 @@ class FileChooser(BaseWidget):
         self.select_button.set_valign(Gtk.Align.CENTER)
 
         row.set_activatable_widget(self.select_button)
-        
+
         self.select_button.connect("clicked", self._on_button_clicked)
         control_box.append(self.select_button)
 
@@ -131,7 +131,7 @@ class FileChooser(BaseWidget):
                 parent = current_file.get_parent() if not self.folder_mode else current_file
                 dialog.set_initial_folder(parent)
             except Exception as e:
-                print(f"Error setting initial folder: {e}")
+                self.logger.error(f"Error setting initial folder: {e}")
 
         # Выбор метода открытия
         try:
@@ -151,7 +151,7 @@ class FileChooser(BaseWidget):
                     callback=self._on_file_selected
                 )
         except Exception as e:
-            print(f"File dialog error: {e}")
+            self.logger.error(f"File dialog error: {e}")
 
     def _create_file_filters(self):
         filters = Gio.ListStore.new(Gtk.FileFilter)
@@ -177,7 +177,7 @@ class FileChooser(BaseWidget):
 
                 self.update_display()
         except Exception as e:
-            print(f"File selection error: {e}")
+            self.logger.error(f"File selection error: {e}")
 
     def _on_files_selected(self, dialog, result):
         try:
@@ -187,7 +187,7 @@ class FileChooser(BaseWidget):
                 self.setting._set_backend_value(paths)
                 self.update_display()
         except Exception as e:
-            print(f"Multiple files selection error: {e}")
+            self.logger.error(f"Multiple files selection error: {e}")
 
     def _on_folder_selected(self, dialog, result):
         try:
@@ -196,7 +196,7 @@ class FileChooser(BaseWidget):
                 self.setting._set_backend_value(folder.get_path())
                 self.update_display()
         except Exception as e:
-            print(f"Folder selection error: {e}")
+            self.logger.error(f"Folder selection error: {e}")
 
     def _update_folder_display(self, current):
         if current:

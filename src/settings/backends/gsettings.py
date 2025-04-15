@@ -8,7 +8,7 @@ class GSettingsBackend(Backend):
         source = Gio.SettingsSchemaSource.get_default()
 
         if source.lookup(schema_name, True) is None:
-            print(f"[ERROR] Scheme {schema_name} is not installed")
+            self.logger.error(f"Scheme {schema_name} is not installed")
             return None
 
         return Gio.Settings.new(schema_name)
@@ -24,7 +24,7 @@ class GSettingsBackend(Backend):
             value = schema.get_value(key_name)
             return value.unpack()
         except Exception as e:
-            print(f"[ERROR] Error when getting the value {key}: {e}")
+            self.logger.error(f"Error when getting the value {key}: {e}")
             return None
 
     def get_range(self, key, gtype):
@@ -38,7 +38,7 @@ class GSettingsBackend(Backend):
             value = schema.get_range(key_name)
             return value.unpack()[1]
         except Exception as e:
-            print(f"[ERROR] Error when getting the range {key}: {e}")
+            self.logger.error(f"Error when getting the range {key}: {e}")
             return None
 
     def set_value(self, schema_key, value, gtype):
@@ -51,4 +51,4 @@ class GSettingsBackend(Backend):
         try:
             schema.set_value(key_name, GLib.Variant(gtype, value))
         except Exception as e:
-            print(f"[ERROR] Error when setting the value {schema_key}: {e}")
+            self.logger.error(f"Error when setting the value {schema_key}: {e}")

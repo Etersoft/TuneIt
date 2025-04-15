@@ -2,6 +2,10 @@ import os
 
 import yaml
 
+import logging
+
+logger = logging.getLogger(f"{__name__}")
+
 def get_local_module_directory():
     home_directory = os.path.expanduser("~")
     return os.path.join(home_directory, ".local", "share", "tuneit", "modules")
@@ -44,7 +48,7 @@ def load_yaml_files_from_directory(directory):
                             item['module_path'] = directory
                         yaml_data.extend(data)
                 except yaml.YAMLError as e:
-                    print(f"Ошибка при чтении файла {file_path}: {e}")
+                    logger.error(f"Ошибка при чтении файла {file_path}: {e}")
 
     sections_data = []
     sections_directory = os.path.join(directory, 'sections')
@@ -58,7 +62,7 @@ def load_yaml_files_from_directory(directory):
                         if data:
                             sections_data.extend(data)
                     except yaml.YAMLError as e:
-                        print(f"Ошибка при чтении файла {file_path}: {e}")
+                        logger.error(f"Ошибка при чтении файла {file_path}: {e}")
 
     for module in yaml_data:
         if 'sections' in module:

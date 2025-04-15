@@ -5,6 +5,9 @@ from time import sleep
 
 from gi.repository import GLib, Adw
 
+import logging
+logger = logging.getLogger(f"{__name__}")
+
 class ServiceNotStartedDialog(Adw.AlertDialog):
 
     response = ""
@@ -42,7 +45,7 @@ class ServiceNotStartedDialog(Adw.AlertDialog):
             else:
                 return False
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logger.error(f"An error occurred: {e}")
             return False
 
     def service_enable(self):
@@ -52,7 +55,7 @@ class ServiceNotStartedDialog(Adw.AlertDialog):
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
         except Exception as e:
-            print(f"An error occurred: {e}")
+            logger.error(f"An error occurred: {e}")
 
     def service_enable_with_restart(self):
         self.service_enable()

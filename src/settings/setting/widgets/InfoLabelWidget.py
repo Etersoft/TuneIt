@@ -21,7 +21,6 @@ class InfoLabelWidget(BaseWidget):
 
     def _update_initial_state(self):
         current_value = self.setting._get_backend_value()
-        print(current_value)
         self.label.set_label(current_value)
 
     def update_display(self):

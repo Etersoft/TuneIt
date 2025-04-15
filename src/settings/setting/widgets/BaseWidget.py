@@ -1,8 +1,10 @@
+import logging
 from gi.repository import Gtk
 
 class BaseWidget:
     def __init__(self, setting):
         self.setting = setting
+        self.logger = logging.getLogger(f"{self.__class__.__name__}")
 
         self.reset_button = Gtk.Button(
             icon_name="edit-undo-symbolic",
@@ -26,7 +28,7 @@ class BaseWidget:
 
     def set_visible(self, visible: bool):
         self.row.set_visible(visible)
-        
+
     def set_enabled(self, enabled: bool):
         self.row.set_sensitive(enabled)
 

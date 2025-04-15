@@ -1,3 +1,4 @@
+import logging
 from gi.repository import GLib
 
 import traceback
@@ -10,6 +11,8 @@ from .widgets.deps_alert_dialog import TuneItDepsAlertDialog
 
 from .deps import DependencyManager
 
+logger = logging.getLogger("init_settings_stack")
+
 def init_settings_stack(stack, listbox, split_view):
     yaml_data = load_modules()
     section_factory = SectionFactory()
@@ -19,11 +22,11 @@ def init_settings_stack(stack, listbox, split_view):
     dep_manager = DependencyManager()
 
     if stack.get_pages():
-        print("Clear pages...")
+        logger.info("Clear pages...")
         listbox.remove_all()
         for page in stack.get_pages(): stack.remove(page)
     else:
-        print("First init...")
+        logger.info("First init...")
 
     current_module_index = 0
     modules = list(yaml_data)
@@ -95,7 +98,7 @@ def init_settings_stack(stack, listbox, split_view):
             page.create_stack_page(stack, listbox)
 
         if not stack:
-            print("Ошибка: settings_pagestack не найден.")
+            logger.error("settings_pagestack не найден.")
 
         def on_row_selected(listbox, row):
             if row:

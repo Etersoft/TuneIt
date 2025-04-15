@@ -1,14 +1,19 @@
 import gettext
 import locale
+import logging
 import os
 
 
 class Module:
     def __init__(self, module_data):
         self.name = module_data['name']
+
+        self.logger = logging.getLogger(f"{self.__class__.__name__}[{self.name}]")
+
+
         self.weight = module_data.get('weight', 0)
         self.path = module_data.get("module_path")
-        print(self.path)
+        self.logger.debug(self.path)
         self.pages = {
             page['name']: page for page in module_data.get('pages', [])
         }
