@@ -38,7 +38,7 @@ class BinaryBackend(Backend):
             try:
                 return ast.literal_eval(result)
             except (ValueError, SyntaxError) as e:
-                self.logger.error(f"Ошибка при преобразовании результата {result}: {e}")
+                self.logger.warning(f"Ошибка при преобразовании результата {result}: {e}")
                 return result
         return None
 
