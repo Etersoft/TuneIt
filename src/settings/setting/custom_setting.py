@@ -1,7 +1,10 @@
+from gi.repository import GLib
+
 from .base import BaseSetting
 from .widgets import WidgetFactory
 
 
+import threading
 import logging
 import subprocess
 import ast
@@ -16,6 +19,7 @@ class CustomSetting(BaseSetting):
         self.set_command = setting_data.get('set_command')
 
         super().__init__(setting_data, module)
+        self._async_fetch_value()
 
     def create_row(self):
         try:
@@ -27,55 +31,93 @@ class CustomSetting(BaseSetting):
             self.logger.error(f"Error creating row: {str(e)}")
         return None
 
-    def get_value(self):
-        if self._current_value is None:
-            self._current_value = self._execute_get_command()
-        return self._current_value
+    def _async_fetch_value(self, force=False):
+        def fetch():
+            try:
+                new_value = self._execute_get_command()
+                if force or new_value != self._current_value:
+                    GLib.idle_add(self._update_current_value, new_value)
+            except Exception as e:
+                self.logger.error(f"Error fetching value: {str(e)}")
+
+        if force or self._current_value is None:
+            threading.Thread(target=fetch, daemon=True).start()
+
+    def _update_current_value(self, value):
+        print("aaaaaaaa" + value)
+        if self._current_value != value:
+            self._current_value = value
+            if self.widget:
+                self.widget.update_display()
 
     def set_value(self, value):
-        success = self._execute_set_command(value)
-        if success:
-            self._current_value = value
-            self._update_widget()
+        def async_set():
+            try:
+                cmd = self._format_command(self.set_command, value)
+                self._execute_command(cmd, capture_output=False)
+                GLib.idle_add(self._async_fetch_value, True)
+            except Exception as e:
+                self.logger.error(f"Set value error: {str(e)}")
+
+        threading.Thread(target=async_set, daemon=True).start()
 
     def get_range(self):
-        return self._execute_get_range_command()
+        if not self.get_range_command:
+            return None
+
+        try:
+            cmd = self._format_command(self.get_range_command)
+            output = subprocess.check_output(cmd, shell=True, text=True).strip()
+            return ast.literal_eval(output)
+        except subprocess.CalledProcessError as e:
+            self.logger.error(f"Get range command failed: {e.stderr}")
+            return None
 
     def _execute_command(self, cmd, capture_output=True):
-        with subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            shell=True,
-            bufsize=1
-        ) as p:
-            output = []
+        def async_execute():
+            with subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                shell=True,
+                bufsize=1,
+                universal_newlines=True
+            ) as p:
+                output = []
 
-            def process_line(line):
-                line = line.strip()
-                if not line:
-                    return
-                if line.startswith('CALLBACK:'):
-                    self._handle_callback(line)
-                elif line.startswith('NOTIFY:'):
-                    self._handle_notify(line)
-                elif capture_output:
-                    output.append(line)
+                def process_line(line):
+                    line = line.strip()
+                    if not line:
+                        return
 
-            while p.poll() is None:
-                line = p.stdout.readline()
-                process_line(line)
+                    if line.startswith('CALLBACK:'):
+                        self._handle_callback(line)
+                    elif line.startswith('NOTIFY:'):
+                        self._handle_notify(line)
+                    elif capture_output:
+                        output.append(line)
 
-            for line in p.stdout.read().splitlines():
-                process_line(line)
+                while True:
+                    line = p.stdout.readline()
+                    if not line and p.poll() is not None:
+                        break
+                    if line:
+                        GLib.idle_add(process_line, line)
 
-            stderr = p.stderr.read().strip()
+                if capture_output:
+                    GLib.idle_add(lambda: self._process_command_output(''.join(output)))
 
-        if p.returncode != 0:
-            raise subprocess.CalledProcessError(p.returncode, cmd, stderr=stderr)
+                stderr = p.stderr.read()
+                if stderr:
+                    GLib.idle_add(self.logger.error, f"Command error: {stderr}")
 
-        return '\n'.join(output) if capture_output else ''
+        threading.Thread(target=async_execute, daemon=True).start()
+
+    def _process_command_output(self, output):
+        self._current_value = output.strip()
+        if self.widget:
+            self.widget.update_display()
 
     def _execute_get_command(self):
         if not self.get_command:
@@ -152,10 +194,12 @@ class CustomSetting(BaseSetting):
 
     @property
     def current_value(self):
-        return self.get_value()
+        return self._current_value
 
-    def _get_backend_value(self):
-        return self.get_value()
+    def _get_backend_value(self, force=False):
+        if force:
+            self._async_fetch_value(force=True)
+        return self._current_value
 
     def _set_backend_value(self, value):
         self.set_value(value)
