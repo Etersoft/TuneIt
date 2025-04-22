@@ -46,8 +46,7 @@ class NumStepper(BaseWidget):
 
     def update_display(self):
         current_value = self.setting._get_backend_value()
-        with self.spin.handler_block_by_func(self._on_num_changed):
-            self.spin.set_value(float(current_value))
+        self.spin.set_value(float(current_value))
         self._update_reset_visibility()
 
     def _on_num_changed(self, widget):
