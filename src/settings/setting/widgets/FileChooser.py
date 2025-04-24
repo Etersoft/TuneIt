@@ -31,7 +31,7 @@ class FileChooser(BaseWidget):
                 valign=Gtk.Align.CENTER,
                 halign=Gtk.Align.END,
             )
-            self.entry.connect("changed", self._on_entry_changed)
+            self.entry_handler_id = self.entry.connect("changed", self._on_entry_changed)
             control_box.append(self.entry)
         else:
             self.info_label = Gtk.Label(
@@ -210,12 +210,13 @@ class FileChooser(BaseWidget):
         self.info_label.set_label(f"{count} files selected" if count else "No files selected")
 
     def _update_single_file_display(self, current):
-        self.entry.set_text(current or "")
-        if current:
-            file = Gio.File.new_for_path(current)
-            self.entry.set_tooltip_text(file.get_parse_name())
-        else:
-            self.entry.set_tooltip_text(None)
+        with self.entry.handler_block(self.entry_handler_id):
+            self.entry.set_text(current or "")
+            if current:
+                file = Gio.File.new_for_path(current)
+                self.entry.set_tooltip_text(file.get_parse_name())
+            else:
+                self.entry.set_tooltip_text(None)
 
     def _on_entry_changed(self, entry):
         if not self.folder_mode and not self.multiple_mode:

@@ -54,6 +54,7 @@ class Setting(BaseSetting):
             return backend.get_range(self.key, self.gtype)
 
     def _set_backend_value(self, value):
+        self.logger.info(f"SET VALUE {value}")
         backend = self._get_backend()
         if backend:
             backend.set_value(self.key, value, self.gtype)
