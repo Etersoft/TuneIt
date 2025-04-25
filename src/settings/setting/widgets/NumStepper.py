@@ -38,7 +38,7 @@ class NumStepper(BaseWidget):
         control_box.append(self.spin)
 
         row.add_suffix(control_box)
-        self.spin.connect("value-changed", self._on_num_changed)
+        self.spin_handler_id = self.spin.connect("value-changed", self._on_num_changed)
 
         self._update_reset_visibility()
 
@@ -46,7 +46,8 @@ class NumStepper(BaseWidget):
 
     def update_display(self):
         current_value = self.setting._get_backend_value()
-        self.spin.set_value(float(current_value))
+        with self.spin.handler_block(self.spin_handler_id):
+            self.spin.set_value(float(current_value))
         self._update_reset_visibility()
 
     def _on_num_changed(self, widget):
@@ -60,8 +61,9 @@ class NumStepper(BaseWidget):
         default_value = self.setting.default
 
         if default_value is not None:
-            self.setting._set_backend_value(default_value)
-            self.spin.set_value(float(default_value))
+            with self.spin.handler_block(self.spin_handler_id):
+                self.setting._set_backend_value(default_value)
+                self.spin.set_value(float(default_value))
 
         self._update_reset_visibility()
 

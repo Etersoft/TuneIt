@@ -1,4 +1,4 @@
-from gi.repository import Gtk, Adw
+from gi.repository import Gtk, Adw, GObject
 from .BaseWidget import BaseWidget
 
 
@@ -72,22 +72,20 @@ class RadioChoiceWidget(BaseWidget):
             else:
                 group = radio
 
-            radio.connect("toggled", self._on_toggle, value)
+            handler_id = radio.connect("toggled", self._on_toggle, value)
+            self.radio_buttons[value] = (radio, handler_id)
             radio_container.append(radio)
-            self.radio_buttons[value] = radio
 
         self.reset_revealer.set_halign(Gtk.Align.END)
-
         title_horizontal_box.append(self.reset_revealer)
-
         self._update_reset_visibility()
 
         return main_box
 
     def update_display(self):
         current_value = self.setting._get_backend_value()
-        for value, radio in self.radio_buttons.items():
-            with radio.handler_block_by_func(self._on_toggle):
+        for value, (radio, handler_id) in self.radio_buttons.items():
+            with GObject.signal_handler_block(radio, handler_id):
                 radio.set_active(value == current_value)
         self._update_reset_visibility()
 
@@ -104,7 +102,9 @@ class RadioChoiceWidget(BaseWidget):
             self.setting._set_backend_value(default_value)
 
             if default_value in self.radio_buttons:
-                self.radio_buttons[default_value].set_active(True)
+                radio, handler_id = self.radio_buttons[default_value]
+                with GObject.signal_handler_block(radio, handler_id):
+                    radio.set_active(True)
             self._update_reset_visibility()
 
     def _update_reset_visibility(self):
@@ -112,6 +112,5 @@ class RadioChoiceWidget(BaseWidget):
         default_value = self.setting.default
 
         self.reset_revealer.set_reveal_child(
-            current_value != default_value if default_value is not None
-            else False
+            current_value != default_value if default_value is not None else False
         )

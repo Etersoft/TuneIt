@@ -31,7 +31,7 @@ class FileChooser(BaseWidget):
                 valign=Gtk.Align.CENTER,
                 halign=Gtk.Align.END,
             )
-            self.entry_handler_id = self.entry.connect("changed", self._on_entry_changed)
+            self.entry_handler_id = self.entry.connect("activate", self._on_entry_changed)
             control_box.append(self.entry)
         else:
             self.info_label = Gtk.Label(
