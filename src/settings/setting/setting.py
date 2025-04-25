@@ -17,6 +17,9 @@ class Setting(BaseSetting):
         self.key = setting_data.get('key')
 
         super().__init__(setting_data, module)
+
+        self._current_value = self.default
+
         self._async_fetch_value()
 
     def create_row(self):
@@ -52,7 +55,7 @@ class Setting(BaseSetting):
                     self.logger.error(f"Error fetching value: {str(e)}")
             GLib.idle_add(self._update_current_value, value)
 
-        if self._current_value is None or force:
+        if force or self._current_value == self.default:
             threading.Thread(target=fetch, daemon=True).start()
 
     def _update_current_value(self, value):

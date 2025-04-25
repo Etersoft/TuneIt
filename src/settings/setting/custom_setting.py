@@ -19,6 +19,9 @@ class CustomSetting(BaseSetting):
         self.set_command = setting_data.get('set_command')
 
         super().__init__(setting_data, module)
+
+        self._current_value = self.default
+
         self._async_fetch_value()
 
     def create_row(self):
@@ -40,7 +43,7 @@ class CustomSetting(BaseSetting):
             except Exception as e:
                 self.logger.error(f"Error fetching value: {str(e)}")
 
-        if force or self._current_value is None:
+        if force or self._current_value == self.default:
             threading.Thread(target=fetch, daemon=True).start()
 
     def _update_current_value(self, value):
