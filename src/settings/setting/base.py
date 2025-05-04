@@ -15,7 +15,7 @@ class BaseSetting:
         self.orig_name = setting_data['name']
 
         self.logger = logging.getLogger(f"{self.__class__.__name__}[{self.name}]")
-
+        self.weight = setting_data.get('weight', 1)
         self.widget = None
 
         self.root = setting_data.get('root', False)

@@ -9,6 +9,7 @@ class ClassicSection(BaseSection):
         super().__init__(section_data, module)
         self.logger = logging.getLogger(f"{self.__class__.__name__}[{self.name}]")
         self.settings = [Setting(s, module) for s in section_data.get('settings', [])]
+        self.settings = sorted(self.settings, key=lambda s: s.weight, reverse=True)
         self.module = module
 
         self.module.add_section(self)
