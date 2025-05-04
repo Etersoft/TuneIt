@@ -56,6 +56,7 @@ class AvatarWidget(BaseWidget):
             transition_duration=150,
             child=self.reset_button,
             reveal_child=False,
+            valign=Gtk.Align.START,
             halign=Gtk.Align.END
         )
         
