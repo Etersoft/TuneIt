@@ -1,3 +1,4 @@
+from .AvatarWidget import AvatarWidget
 from .BooleanWidget import BooleanWidget
 from .ChoiceWidget import ChoiceWidget
 from .RadioChoiceWidget import RadioChoiceWidget
@@ -13,6 +14,7 @@ logger = logging.getLogger(f"{__name__}")
 
 class WidgetFactory:
     widget_map = {
+        'avatar': AvatarWidget,
         'file': FileChooser,
         'choice': ChoiceWidget,
         'choice_radio': RadioChoiceWidget,
