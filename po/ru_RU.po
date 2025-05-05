@@ -8,15 +8,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tuneit\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-14 00:07+0300\n"
-"PO-Revision-Date: 2025-02-14 00:11+0300\n"
+"POT-Creation-Date: 2025-05-05 18:50+0300\n"
+"PO-Revision-Date: 2025-05-05 18:55+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ru_RU\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.6\n"
 
 #: data/ru.ximperlinux.TuneIt.desktop.in:3
 msgid "tuneit"
@@ -48,7 +48,7 @@ msgid "Show modules that require root permissions"
 msgstr "Показывать модули которым нужны root права"
 
 #. Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
-#: src/main.py:68
+#: src/about.py:40
 msgid "translator-credits"
 msgstr "ximper@etersoft.ru"
 
@@ -93,11 +93,11 @@ msgstr "Игнорировать"
 msgid "Skip module"
 msgstr "Пропустить модуль"
 
-#: src/settings/widgets/service_dialog.py:13
+#: src/settings/widgets/service_dialog.py:20
 msgid "Dbus service is disabled or unresponsive."
 msgstr "Dbus сервис отключен или не отвечает."
 
-#: src/settings/widgets/service_dialog.py:14
+#: src/settings/widgets/service_dialog.py:21
 msgid ""
 "It is needed for modules that require root permissions.\n"
 "Do you want to try to turn on the service?\n"
@@ -107,11 +107,11 @@ msgstr ""
 "Вы хотите попробовать включить сервис?\n"
 "После включения сервиса Tune It перезапустится."
 
-#: src/settings/widgets/service_dialog.py:16
+#: src/settings/widgets/service_dialog.py:23
 msgid "Yes"
 msgstr "Да"
 
-#: src/settings/widgets/service_dialog.py:17
+#: src/settings/widgets/service_dialog.py:24
 msgid "No"
 msgstr "Нет"
 
@@ -126,6 +126,46 @@ msgstr "Вы можете написать в официальный телег�
 #: src/settings/widgets/error_dialog.blp:10
 msgid "Copy the log and go to telegram chat"
 msgstr "Скопировать в лог и перейти в телеграм чат"
+
+#: src/settings/setting/widgets/DualListWidget.py:18
+msgid "Search..."
+msgstr "Поиск..."
+
+#: src/settings/setting/widgets/DualListWidget.py:34
+msgid "_Cancel"
+msgstr "Отменить"
+
+#: src/settings/setting/widgets/DualListWidget.py:35
+msgid "_Add"
+msgstr "Добавить"
+
+#: src/settings/setting/widgets/DualListWidget.py:109
+msgid "Add"
+msgstr "Добавить"
+
+#: src/settings/setting/widgets/DualListWidget.py:110
+msgid "Add items"
+msgstr "Добавить элементы"
+
+#: src/settings/setting/widgets/DualListWidget.py:122
+msgid "Apply"
+msgstr "Применть"
+
+#: src/settings/setting/widgets/DualListWidget.py:130
+msgid "Edit"
+msgstr "Изменить"
+
+#: src/settings/setting/widgets/DualListWidget.py:131
+msgid "Toggle reorder mode"
+msgstr "Переключение режима изменения порядка"
+
+#: src/settings/setting/widgets/DualListWidget.py:175
+msgid "Move up"
+msgstr "Передвинуть вверх"
+
+#: src/settings/setting/widgets/DualListWidget.py:183
+msgid "Move down"
+msgstr "Передвинуть вниз"
 
 #~ msgid "You need root rights to read and modify system configs."
 #~ msgstr "Вам нужны права суперпользователя (root), чтобы читать и изменять конфигм системы."

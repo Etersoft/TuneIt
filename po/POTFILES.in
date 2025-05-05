@@ -9,6 +9,7 @@ src/about.py
 src/main.py
 src/window.py
 src/window.blp
+
 src/settings/main.py
 src/settings/deps/__init__.py
 src/settings/widgets/deps_alert_dialog.blp
@@ -16,3 +17,5 @@ src/settings/widgets/deps_alert_dialog.py
 src/settings/widgets/service_dialog.py
 src/settings/widgets/error_dialog.py
 src/settings/widgets/error_dialog.blp
+
+src/settings/setting/widgets/DualListWidget.py
