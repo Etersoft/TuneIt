@@ -55,7 +55,7 @@ class BaseSetting:
             else:
                 self.map = self._default_map()
 
-        if isinstance(self.map, list) and 'choice' in self.type:
+        if isinstance(self.map, list) and ('choice' in self.type or 'list_dual' in self.type):
             self.map = {
                 item.title(): item for item in self.map
                 if item is not None
@@ -65,7 +65,7 @@ class BaseSetting:
                 self.logger.warning(f"Warning: 'map' is empty for setting {self.name}. Check data source.")
 
 
-        if isinstance(self.map, dict) and 'choice' in self.type:
+        if isinstance(self.map, dict) and ('choice' in self.type or 'list_dual' in self.type):
             self.map = {
                 self._(key) if isinstance(key, str) else key: value
                 for key, value in self.map.items()
@@ -83,8 +83,8 @@ class BaseSetting:
         if self.type == 'boolean':
             # Дефолтная карта для булевых настроек
             return {True: True, False: False}
-        if 'choice' in self.type:
-            # Дефолтная карта для выборов
+
+        if 'choice' in self.type or 'list_dual' in self.type:
             map = {}
             range = self._get_backend_range()
 
@@ -92,8 +92,9 @@ class BaseSetting:
                 return {}
 
             for var in range:
-                self.logger.debug(var)
-                map[var[0].upper() + var[1:]] = var
+                key = var
+                display_name = var[0].upper() + var[1:] if var else ''
+                map[key] = display_name
             return map
         if self.type == 'number':
             map = {}
