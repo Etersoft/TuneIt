@@ -8,6 +8,7 @@ from .FileChooser import FileChooser
 from .ButtonWidget import ButtonWidget
 from .InfoLabelWidget import InfoLabelWidget
 from .InfoDictWidget import InfoDictWidget
+from .DualListWidget import DualListWidget
 
 import logging
 logger = logging.getLogger(f"{__name__}")
@@ -24,6 +25,7 @@ class WidgetFactory:
         'button': ButtonWidget,
         'info_label': InfoLabelWidget,
         'info_dict': InfoDictWidget,
+        'list_dual': DualListWidget,
     }
 
     @staticmethod
