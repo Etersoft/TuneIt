@@ -62,6 +62,7 @@ configure_file(
 
 tuneit_sources = [
   '__init__.py',
+  'about.py',
   'main.py',
   'window.py',
   'daemon.py',
