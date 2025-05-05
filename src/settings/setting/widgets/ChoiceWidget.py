@@ -14,8 +14,7 @@ class ChoiceWidget(BaseWidget):
         self.handler_id = self.dropdown.connect("notify::selected", self._on_choice_changed)
 
         self.row.set_activatable_widget(self.dropdown)
-        
-        self._set_dropdown_width(items)
+
         self._update_dropdown_selection()
 
 
@@ -36,18 +35,6 @@ class ChoiceWidget(BaseWidget):
 
         with self.dropdown.handler_block(self.handler_id):
             self.dropdown.set_selected(current_index)
-
-    def _set_dropdown_width(self, items):
-        layout = self.dropdown.create_pango_layout("")
-        width = 0
-
-        for item in items:
-            layout.set_text(item)
-            text_width = layout.get_pixel_size()[0]
-            if text_width > width:
-                width = text_width
-
-        self.dropdown.set_size_request(width + 50, -1)
 
     def _on_choice_changed(self, dropdown, _):
         selected = dropdown.get_selected()
