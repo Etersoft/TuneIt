@@ -25,6 +25,7 @@ gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Gio, Adw
 from .window import TuneitWindow
+from .about import build_about_dialog
 
 def get_main_window():
     return _application.props.active_window
@@ -58,14 +59,7 @@ class TuneitApplication(Adw.Application):
 
     def on_about_action(self, *args):
         """Callback for the app.about action."""
-        about = Adw.AboutDialog(application_name='tuneit',
-                                application_icon='ru.ximperlinux.TuneIt',
-                                developer_name='Etersoft',
-                                version=tuneit_config.VERSION,
-                                developers=['Ximper'],
-                                copyright='© 2024 Etersoft')
-        # Translators: Replace "translator-credits" with your name/username, and optionally an email or URL.
-        about.set_translator_credits(_('translator-credits'))
+        about = build_about_dialog()
         about.present(self.props.active_window)
 
     def on_preferences_action(self, widget, _):

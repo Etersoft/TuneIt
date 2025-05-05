@@ -5,6 +5,7 @@ data/ru.ximperlinux.TuneIt.metainfo.xml.in
 data/ru.ximperlinux.TuneIt.gschema.xml
 data/ru.ximperlinux.TuneIt.Daemon.policy
 
+src/about.py
 src/main.py
 src/window.py
 src/window.blp
