@@ -84,7 +84,12 @@ class CustomSetting(BaseSetting):
         try:
             cmd = self._format_command(self.get_command)
             output = self._execute_command(cmd)
-            return output
+            try: value = ast.literal_eval(output)
+            except Exception as e:
+                value = output
+                self.logger.info(f"GET: {output} with error {e}")
+
+            return value
         except subprocess.CalledProcessError as e:
             self.logger.error(f"Get command failed: {e.stderr}")
             return self.default
